@@ -18,6 +18,8 @@ export const COLORS = {
   btn: '#40B574',
   white: '#ffffff',
   black: '#000000',
+  active: '#40B574',
+  in_active: '#EEF4F1',
 };
 
 const appTheme = {SIZES, FONTS, COLORS};

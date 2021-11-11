@@ -1,16 +1,12 @@
 import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
-import {createDrawerNavigator} from '@react-navigation/drawer';
-import AuthStack from './navigation/AuthNavigator';
-
-const Drawer = createDrawerNavigator();
+import AppStack from './navigation/AppStack';
+import AuthStack from './navigation/AuthStack';
 
 const App = () => {
   return (
     <NavigationContainer>
-      <Drawer.Navigator>
-        <Drawer.Screen name="Auth" component={AuthStack} />
-      </Drawer.Navigator>
+      <AuthStack />
     </NavigationContainer>
   );
 };

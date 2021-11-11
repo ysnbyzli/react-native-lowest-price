@@ -1,15 +1,14 @@
-import React, {useState} from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import {useFormik} from 'formik';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import {images, SIZES, COLORS, FONTS} from '../constants';
 import Input from '../components/Form/Input';
 import Button from '../components/Form/Button';
 import {loginSchema} from '../validations';
 
-const LoginScreen = () => {
-  const [loading, setLoading] = useState(false);
-
+const LoginScreen = ({navigation}) => {
   const {handleSubmit, handleBlur, handleChange, values, errors, touched} =
     useFormik({
       initialValues: {
@@ -43,10 +42,17 @@ const LoginScreen = () => {
             touched={touched.password}
             onBlur={handleBlur('password')}
           />
-          <Button text={'Sign in'} onPress={handleSubmit} loading={loading} />
+          <Button text={'Sign in'} onPress={handleSubmit} />
           <SignUpText>
             Don’t You have an account? <BoldText>Sign up</BoldText>
           </SignUpText>
+          <BackHomeTouchable
+            onPress={() => navigation.navigate('Root', {screen: 'Home'})}>
+            <BackHome>
+              <Ionicons name="arrow-back" size={22} color={COLORS.white} />
+              <Text>Back to home</Text>
+            </BackHome>
+          </BackHomeTouchable>
         </Content>
       </Background>
     </Container>
@@ -73,11 +79,25 @@ const SignUpText = styled.Text`
   margin-top: 12px;
   font-family: ${FONTS.regular};
   color: black;
-  color: ${COLORS.black};
+  color: ${COLORS.white};
 `;
 
 const BoldText = styled.Text`
   font-weight: bold;
   color: ${COLORS.white};
+`;
+
+const BackHomeTouchable = styled.TouchableWithoutFeedback``;
+
+const BackHome = styled.View`
+  margin-top: 20px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+`;
+const Text = styled.Text`
+  color: ${COLORS.white};
+  margin-left: 10px;
+  font-family: ${FONTS.bold};
 `;
 export default LoginScreen;
