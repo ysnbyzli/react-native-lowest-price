@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import styled from 'styled-components';
 import {useFormik} from 'formik';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -7,8 +7,22 @@ import {images, SIZES, COLORS, FONTS} from '../constants';
 import Input from '../components/Form/Input';
 import Button from '../components/Form/Button';
 import {loginSchema} from '../validations';
+import {useDispatch, useSelector} from 'react-redux';
+import {userLoginRequest} from '../store/userSlice';
 
 const LoginScreen = ({navigation}) => {
+  const dispatch = useDispatch();
+
+  const {loading, data} = useSelector(state => state.user);
+
+  const handleLogin = async form => {
+    dispatch(userLoginRequest(form));
+  };
+  // If user data exists send user to home page
+  useEffect(() => {
+    if (data) navigation.navigate('Root', {screen: 'Home'});
+  }, [data]);
+
   const {handleSubmit, handleBlur, handleChange, values, errors, touched} =
     useFormik({
       initialValues: {
@@ -17,7 +31,7 @@ const LoginScreen = ({navigation}) => {
       },
       validationSchema: loginSchema,
       onSubmit: values => {
-        alert(JSON.stringify(values, null, 2));
+        handleLogin(values);
       },
     });
 
@@ -42,7 +56,7 @@ const LoginScreen = ({navigation}) => {
             touched={touched.password}
             onBlur={handleBlur('password')}
           />
-          <Button text={'Sign in'} onPress={handleSubmit} />
+          <Button text={'Sign in'} onPress={handleSubmit} loading={loading} />
           <SignUpText>
             Don’t You have an account? <BoldText>Sign up</BoldText>
           </SignUpText>

@@ -7,13 +7,17 @@ import styled from 'styled-components/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {COLORS, FONTS, images} from '../constants';
 import Avatar from './Avatar';
+import {useSelector} from 'react-redux';
+import {selectUser} from '../store/userSlice';
 
 const CustomDrawer = props => {
+  const user = useSelector(selectUser);
+
   return (
     <StyledContainer>
       <DrawerContentScrollView {...props}>
         <StyledImageBg source={images.banner}>
-          <Avatar />
+          {user && <Avatar />}
         </StyledImageBg>
         <StyledBody>
           <DrawerItemList {...props} />
@@ -24,13 +28,23 @@ const CustomDrawer = props => {
           <Ionicons name="settings-outline" size={22} color={'#000'} />
           <BottomText>Settings</BottomText>
         </BottomItem>
-        <StyledTouchable
-          onPress={() => props.navigation.navigate('LoginScreen')}>
-          <BottomItem>
-            <Ionicons name="exit-outline" size={22} color={'#000'} />
-            <BottomText>Logout</BottomText>
-          </BottomItem>
-        </StyledTouchable>
+        {user ? (
+          <StyledTouchable
+            onPress={() => props.navigation.navigate('LoginScreen')}>
+            <BottomItem>
+              <Ionicons name="exit-outline" size={22} color={'#000'} />
+              <BottomText>Logout</BottomText>
+            </BottomItem>
+          </StyledTouchable>
+        ) : (
+          <StyledTouchable
+            onPress={() => props.navigation.navigate('LoginScreen')}>
+            <BottomItem>
+              <Ionicons name="enter-outline" size={22} color={'#000'} />
+              <BottomText>Login</BottomText>
+            </BottomItem>
+          </StyledTouchable>
+        )}
       </BottomContent>
     </StyledContainer>
   );

@@ -5,10 +5,14 @@ import CustomDrawer from '../components/CustomDrawer';
 import Home from '../screens/Home';
 import Profile from '../screens/Profile';
 import {COLORS, FONTS} from '../constants';
+import {useSelector} from 'react-redux';
+import {selectUser} from '../store/userSlice';
 
 const Drawer = createDrawerNavigator();
 
 const AppStack = () => {
+  const user = useSelector(selectUser);
+
   return (
     <Drawer.Navigator
       drawerContent={props => <CustomDrawer {...props} />}
@@ -30,15 +34,17 @@ const AppStack = () => {
           ),
         }}
       />
-      <Drawer.Screen
-        name="Profile"
-        component={Profile}
-        options={{
-          drawerIcon: ({color}) => (
-            <Ionicons name="person-outline" size={22} color={color} />
-          ),
-        }}
-      />
+      {user && (
+        <Drawer.Screen
+          name="Profile"
+          component={Profile}
+          options={{
+            drawerIcon: ({color}) => (
+              <Ionicons name="person-outline" size={22} color={color} />
+            ),
+          }}
+        />
+      )}
     </Drawer.Navigator>
   );
 };

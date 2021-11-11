@@ -1,15 +1,21 @@
 import React from 'react';
 import {View, Text} from 'react-native';
+import {useSelector} from 'react-redux';
 import styled from 'styled-components/native';
 import {COLORS, FONTS} from '../constants';
+import {selectUser} from '../store/userSlice';
 
 const Avatar = () => {
+  const user = useSelector(selectUser);
+
   return (
     <Container>
       <Image source={require('../assets/images/avatar.png')} />
       <TextBox>
-        <Name>Yasin Beyazlı</Name>
-        <Username>@ysnbyzli</Username>
+        <Name>
+          {user.firstName} {user.lastName}
+        </Name>
+        <Username>@{user.username}</Username>
       </TextBox>
     </Container>
   );
