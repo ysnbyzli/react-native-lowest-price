@@ -10,7 +10,7 @@ import {loginSchema} from '../validations';
 import {useDispatch, useSelector} from 'react-redux';
 import {userLoginRequest} from '../store/userSlice';
 
-const LoginScreen = ({navigation}) => {
+const LoginScreen = ({route, navigation}) => {
   const dispatch = useDispatch();
 
   const {loading, data} = useSelector(state => state.user);
@@ -58,7 +58,10 @@ const LoginScreen = ({navigation}) => {
           />
           <Button text={'Sign in'} onPress={handleSubmit} loading={loading} />
           <SignUpText>
-            Don’t You have an account? <BoldText>Sign up</BoldText>
+            Don’t You have an account?{' '}
+            <BoldText onPress={() => navigation.navigate('RegisterScreen')}>
+              Sign up
+            </BoldText>
           </SignUpText>
           <BackHomeTouchable
             onPress={() => navigation.navigate('Root', {screen: 'Home'})}>

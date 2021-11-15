@@ -1,10 +1,11 @@
 import React from 'react';
-import {View, Text} from 'react-native';
+import {View} from 'react-native';
+import Header from '../components/Header';
 
 const Home = () => {
   return (
-    <View>
-      <Text>Home</Text>
+    <View style={{flex: 1}}>
+      <Header />
     </View>
   );
 };
