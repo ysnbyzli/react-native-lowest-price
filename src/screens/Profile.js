@@ -8,17 +8,15 @@ import {FONTS, COLORS} from '../constants';
 import Title from '../components/Profile/Title';
 import Item from '../components/Profile/Item';
 import CustomButton from '../components/CustomButton';
+import Avatar from '../components/Avatar';
 
-const Profile = () => {
+const Profile = ({navigation}) => {
   const user = useSelector(selectUser);
 
   return (
     <Container>
       <Header>
-        <Avatar
-          source={require('../assets/images/avatar.png')}
-          resizeMode="cover"
-        />
+        <Avatar width={100} height={100} />
         <Text
           style={{
             marginTop: 10,
@@ -35,7 +33,7 @@ const Profile = () => {
           text="Edit Profile"
           icon="chevron-forward-outline"
           color={COLORS.white}
-          onPress={() => console.log('Edit click')}
+          onPress={() => navigation.navigate('EditProfileScreen')}
         />
       </Header>
       <Body>
@@ -62,11 +60,6 @@ const Container = styled.View`
 const Header = styled.View`
   align-items: center;
   padding: 20px;
-`;
-
-const Avatar = styled.Image`
-  height: 100px;
-  width: 100px;
 `;
 
 const Body = styled.View`

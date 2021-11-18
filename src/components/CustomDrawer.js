@@ -17,7 +17,17 @@ const CustomDrawer = props => {
     <StyledContainer>
       <DrawerContentScrollView {...props}>
         <StyledImageBg source={images.banner}>
-          {user && <Avatar />}
+          {user && (
+            <AvatarContainer>
+              <Avatar />
+              <TextBox>
+                <Name>
+                  {user.firstName} {user.lastName}
+                </Name>
+                <Username>@{user.username}</Username>
+              </TextBox>
+            </AvatarContainer>
+          )}
         </StyledImageBg>
         <StyledBody>
           <DrawerItemList {...props} />
@@ -81,5 +91,24 @@ const BottomText = styled.Text`
   margin-left: 10px;
   font-family: ${FONTS.bold};
   color: ${COLORS.black};
+`;
+
+const AvatarContainer = styled.View`
+  flex-direction: row;
+  margin-left: 15px;
+`;
+const TextBox = styled.View`
+  margin-left: 15px;
+  justify-content: center;
+`;
+const Name = styled.Text`
+  font-family: ${FONTS.bold};
+  color: ${COLORS.white};
+`;
+const Username = styled.Text`
+  font-family: ${FONTS.regular};
+  color: ${COLORS.white};
+  font-size: 10px;
+  letter-spacing: 0.6px;
 `;
 export default CustomDrawer;

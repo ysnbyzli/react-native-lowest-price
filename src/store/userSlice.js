@@ -20,7 +20,11 @@ export const userSlice = createSlice({
     loading: false,
     error: null,
   },
-  reducers: {},
+  reducers: {
+    addImage: (state, action) => {
+      state.data = {...state.data, profile_image: action.payload};
+    },
+  },
   extraReducers: builder => {
     builder.addCase(userLoginRequest.pending, state => {
       state.loading = true;
@@ -38,5 +42,7 @@ export const userSlice = createSlice({
 });
 
 export const selectUser = state => state.user.data;
+
+export const {addImage} = userSlice.actions;
 
 export default userSlice.reducer;

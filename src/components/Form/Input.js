@@ -10,9 +10,11 @@ const Input = ({
   error,
   onBlur,
   touched,
+  label,
 }) => {
   return (
     <Container>
+      {label && <Label>{label}</Label>}
       <InputWrapper error={error} touched={touched}>
         <TextInput
           placeholder={placeholder}
@@ -27,7 +29,9 @@ const Input = ({
   );
 };
 
-const Container = styled.View``;
+const Container = styled.View`
+  width: 100%;
+`;
 const InputWrapper = styled.View`
   background-color: #f1eded;
   width: 100%;
@@ -44,6 +48,13 @@ const ErrorText = styled.Text`
   font-size: 13px;
   margin-left: 5px;
   font-style: italic;
+`;
+
+const Label = styled.Text`
+  margin-left: 10px;
+  margin-top: 10px;
+  margin-bottom: -6px;
+  font-family: ${FONTS.medium};
 `;
 
 export default Input;

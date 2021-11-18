@@ -3,10 +3,10 @@ import {createDrawerNavigator} from '@react-navigation/drawer';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import CustomDrawer from '../components/CustomDrawer';
 import Home from '../screens/Home';
-import Profile from '../screens/Profile';
 import {COLORS, FONTS} from '../constants';
 import {useSelector} from 'react-redux';
 import {selectUser} from '../store/userSlice';
+import ProfileStack from './ProfileStack';
 
 const Drawer = createDrawerNavigator();
 
@@ -37,7 +37,7 @@ const AppStack = () => {
       {user && (
         <Drawer.Screen
           name="Profile"
-          component={Profile}
+          component={ProfileStack}
           options={{
             drawerIcon: ({color}) => (
               <Ionicons name="person-outline" size={22} color={color} />
