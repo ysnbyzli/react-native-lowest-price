@@ -2,6 +2,7 @@ import React, {useEffect} from 'react';
 import styled from 'styled-components';
 import {useFormik} from 'formik';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import {showMessage} from 'react-native-flash-message';
 
 import {images, SIZES, COLORS, FONTS} from '../constants';
 import Input from '../components/Form/Input';
@@ -13,7 +14,7 @@ import {userLoginRequest} from '../store/userSlice';
 const LoginScreen = ({route, navigation}) => {
   const dispatch = useDispatch();
 
-  const {loading, data} = useSelector(state => state.user);
+  const {loading, data, error} = useSelector(state => state.user);
 
   const handleLogin = async form => {
     dispatch(userLoginRequest(form));
@@ -22,6 +23,16 @@ const LoginScreen = ({route, navigation}) => {
   useEffect(() => {
     if (data) navigation.navigate('Root', {screen: 'Home'});
   }, [data]);
+
+  useEffect(() => {
+    if (error) {
+      showMessage({
+        message: error.message,
+        type: 'danger',
+        icon: 'danger',
+      });
+    }
+  }, [error]);
 
   const {handleSubmit, handleBlur, handleChange, values, errors, touched} =
     useFormik({

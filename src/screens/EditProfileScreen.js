@@ -1,11 +1,12 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import styled from 'styled-components';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {useFormik} from 'formik';
+import {showMessage} from 'react-native-flash-message';
 
 import {COLORS, FONTS} from '../constants';
-import {addImage, selectUser} from '../store/userSlice';
+import {addImage, updateUserRequest} from '../store/userSlice';
 import Input from '../components/Form/Input';
 import BottomModal from '../components/Modal/BottomModal';
 import CustomButton from '../components/CustomButton';
@@ -15,8 +16,9 @@ import Avatar from '../components/Avatar';
 
 const EditProfileScreen = () => {
   const [show, setShow] = useState(false);
+  const [image, setImage] = useState(null);
 
-  const user = useSelector(selectUser);
+  const {loading, data} = useSelector(state => state.user);
   const dispatch = useDispatch();
 
   const onHandleModalShow = () => {
@@ -27,12 +29,28 @@ const EditProfileScreen = () => {
     setShow(false);
   };
 
+  // useEffect(() => {
+  //   if (data) {
+  //     showMessage({
+  //       message: 'Profile updated successfully',
+  //       type: 'success',
+  //       icon: 'success',
+  //     });
+  //   }
+  // }, [data]);
+
   const handleChangeImageFromCamera = async () => {
     await launchCamera(
       {mediaType: 'photo', quality: 1, saveToPhotos: true},
       res => {
         if (res.didCancel) return;
         dispatch(addImage(res.assets[0].uri));
+        setImage({
+          uri: res.assets[0].uri,
+          type: res.assets[0].type,
+          name: res.assets[0].fileName,
+        });
+        onHandleModalClose();
       },
     );
   };
@@ -41,17 +59,43 @@ const EditProfileScreen = () => {
     await launchImageLibrary({}, res => {
       if (res.didCancel) return;
       dispatch(addImage(res.assets[0].uri));
+      setImage({
+        uri: res.assets[0].uri,
+        type: res.assets[0].type,
+        name: res.assets[0].fileName,
+      });
+      onHandleModalClose();
+    });
+  };
+
+  const onHandleUpdateSubmit = async values => {
+    const formData = new FormData();
+    if (image) {
+      formData.append('profile', {
+        name: new Date() + '_profile',
+        uri: image.uri,
+        type: image.type,
+      });
+    }
+    formData.append('firstName', values.firstName.toString());
+    formData.append('lastName', values.lastName.toString());
+    formData.append('username', values.username.toString());
+    dispatch(updateUserRequest(formData, 'deneme'));
+    showMessage({
+      message: 'Profile updated successfully',
+      type: 'success',
+      icon: 'success',
     });
   };
 
   const {handleSubmit, handleChange, values} = useFormik({
     initialValues: {
-      firstName: user.firstName,
-      lastName: user.lastName,
-      username: user.username,
+      firstName: data.firstName,
+      lastName: data.lastName,
+      username: data.username,
     },
     onSubmit: values => {
-      console.log({...values, profile_image: user.profile_image});
+      onHandleUpdateSubmit(values);
     },
   });
 
@@ -78,7 +122,7 @@ const EditProfileScreen = () => {
         label="Username"
         onChangeText={handleChange('username')}
       />
-      <Button text="Güncelle" onPress={handleSubmit} />
+      <Button text="Güncelle" onPress={handleSubmit} loading={loading} />
       <BottomModal
         onTouchOutSide={onHandleModalClose}
         title="Change Photo"

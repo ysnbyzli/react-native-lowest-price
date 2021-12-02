@@ -11,11 +11,12 @@ const Input = ({
   onBlur,
   touched,
   label,
+  overrideStyle,
 }) => {
   return (
     <Container>
       {label && <Label>{label}</Label>}
-      <InputWrapper error={error} touched={touched}>
+      <InputWrapper error={error} touched={touched} style={overrideStyle}>
         <TextInput
           placeholder={placeholder}
           secureTextEntry={secureTextEntry}
@@ -35,7 +36,7 @@ const Container = styled.View`
 const InputWrapper = styled.View`
   background-color: #f1eded;
   width: 100%;
-  border-radius: 20px;
+  border-radius: 10px;
   padding-left: 12px;
   margin-top: 18px;
   border: ${props => (props.error && props.touched ? '#ff4f4f' : '#f1eded')};
