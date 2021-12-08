@@ -17,10 +17,11 @@ const RegisterScreen = ({navigation}) => {
   const handleRegister = async form => {
     try {
       setLoading(true);
-      await api().post('/auth/register', form);
+      await api().post('/users', form);
       setLoading(false);
       navigation.navigate('LoginScreen', {newUser: true});
     } catch (er) {
+      console.log(er);
       setError(er.response.data);
       setLoading(false);
     }
@@ -33,6 +34,7 @@ const RegisterScreen = ({navigation}) => {
         lastName: '',
         username: '',
         password: '',
+        email: '',
       },
       validationSchema: registerSchema,
       onSubmit: values => {
@@ -67,6 +69,14 @@ const RegisterScreen = ({navigation}) => {
             error={errors.username}
             touched={touched.username}
             onBlur={handleBlur('username')}
+          />
+          <Input
+            placeholder="Email"
+            value={values.email}
+            onChangeText={handleChange('email')}
+            error={errors.email}
+            touched={touched.email}
+            onBlur={handleBlur('email')}
           />
           <Input
             placeholder="Password"

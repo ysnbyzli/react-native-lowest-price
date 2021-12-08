@@ -7,6 +7,7 @@ import {COLORS, FONTS} from '../constants';
 import {useSelector} from 'react-redux';
 import {selectUser} from '../store/userSlice';
 import ProfileStack from './ProfileStack';
+import HomeStack from './HomeStack';
 
 const Drawer = createDrawerNavigator();
 
@@ -27,7 +28,7 @@ const AppStack = () => {
       }}>
       <Drawer.Screen
         name="Home"
-        component={Home}
+        component={HomeStack}
         options={{
           drawerIcon: ({color}) => (
             <Ionicons name="home-outline" size={22} color={color} />
