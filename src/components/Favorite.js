@@ -10,13 +10,13 @@ import {
 } from '../store/favoriteSlice';
 import {showMessage} from 'react-native-flash-message';
 
-const Favorite = ({product_id}) => {
+const Favorite = ({product}) => {
   const {error, isSuccess, data} = useSelector(state => state.favorites);
   const dispatch = useDispatch();
   const [isFavorite, setIsFavorite] = useState(false);
 
   useEffect(() => {
-    const favoriteItem = data?.find(item => item.product._id == product_id);
+    const favoriteItem = data?.find(item => item.product._id == product?._id);
     setIsFavorite(favoriteItem ? true : false);
   }, [data]);
 
@@ -41,9 +41,9 @@ const Favorite = ({product_id}) => {
 
   const handleAddToFavorite = () => {
     if (isFavorite) {
-      dispatch(deleteProductToFavorites(product_id));
+      dispatch(deleteProductToFavorites(product));
     } else {
-      dispatch(addProductToFavorites(product_id));
+      dispatch(addProductToFavorites(product));
     }
   };
 

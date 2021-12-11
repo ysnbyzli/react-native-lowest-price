@@ -22,11 +22,11 @@ export const fetchAllFavorites = createAsyncThunk(
 
 export const addProductToFavorites = createAsyncThunk(
   'favorites/add',
-  async (id, {rejectWithValue}) => {
+  async (product, {rejectWithValue}) => {
     const token = await AsyncStorage.getItem('token');
     try {
       const data = {
-        product: id,
+        product: product._id,
       };
       const response = await api().post('/favorites', data, {
         headers: {
@@ -34,7 +34,14 @@ export const addProductToFavorites = createAsyncThunk(
           Authorization: `Bearer ${token}`,
         },
       });
-      return {...response.data, product: {_id: response.data.product}};
+      return {
+        ...response.data,
+        product: {
+          _id: response.data.product,
+          image: product.image,
+          title: product.title,
+        },
+      };
     } catch (error) {
       return rejectWithValue(error.response.data);
     }
@@ -43,10 +50,10 @@ export const addProductToFavorites = createAsyncThunk(
 
 export const deleteProductToFavorites = createAsyncThunk(
   'favorites/delete',
-  async id => {
+  async product => {
     const token = await AsyncStorage.getItem('token');
     try {
-      const response = await api().delete(`/favorites/${id}`, {
+      const response = await api().delete(`/favorites/${product._id}`, {
         headers: {
           Accept: 'application/json',
           Authorization: `Bearer ${token}`,

@@ -41,7 +41,7 @@ const Profile = ({navigation}) => {
         <Item
           title="Favorites"
           icon="heart-outline"
-          onPress={() => console.log('Favorite click')}
+          onPress={() => navigation.navigate('FavoritesScreen')}
         />
         <Item
           title="Products"

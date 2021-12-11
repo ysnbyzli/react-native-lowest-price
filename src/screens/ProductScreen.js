@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import styled from 'styled-components/native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import {useDispatch, useSelector} from 'react-redux';
+import {useSelector} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import {COLORS, FONTS, SIZES} from '../constants';
@@ -10,7 +10,6 @@ import {FlatList, Text, TextInput, View} from 'react-native';
 import Record from '../components/Record';
 import CustomModal from '../components/Modal/CustomModal';
 import {selectUser} from '../store/userSlice';
-import {addProductToFavorites} from '../store/favoriteSlice';
 import FloatingButton from '../components/FloatingButton';
 import Button from '../components/Form/Button';
 import {showMessage} from 'react-native-flash-message';
@@ -112,7 +111,7 @@ const ProductScreen = ({route, navigation}) => {
           onPress={() => navigation.goBack()}
         />
         {/* ! FAVORITE */}
-        {user && <Favorite product_id={product_id} />}
+        {user && product && <Favorite product={product} />}
       </Header>
       <Body>
         <ProductImage source={{uri: product?.image}} resizeMode="cover" />
