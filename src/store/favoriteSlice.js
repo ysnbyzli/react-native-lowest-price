@@ -50,10 +50,10 @@ export const addProductToFavorites = createAsyncThunk(
 
 export const deleteProductToFavorites = createAsyncThunk(
   'favorites/delete',
-  async product => {
+  async item => {
     const token = await AsyncStorage.getItem('token');
     try {
-      const response = await api().delete(`/favorites/${product._id}`, {
+      const response = await api().delete(`/favorites/${item.product._id}`, {
         headers: {
           Accept: 'application/json',
           Authorization: `Bearer ${token}`,

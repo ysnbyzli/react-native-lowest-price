@@ -3,6 +3,7 @@ import styled from 'styled-components/native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {useSelector} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 import {COLORS, FONTS, SIZES} from '../constants';
 import api from '../utils/api';
@@ -17,6 +18,7 @@ import Favorite from '../components/Favorite';
 
 const ProductScreen = ({route, navigation}) => {
   const user = useSelector(selectUser);
+  const [sort, setSort] = useState('');
 
   const {product_id} = route.params;
 
@@ -79,6 +81,14 @@ const ProductScreen = ({route, navigation}) => {
     }
   };
 
+  const handleChangeSort = () => {
+    if (sort === '' || sort === 'decrease') {
+      setSort('increase');
+    } else {
+      setSort('decrease');
+    }
+  };
+
   useEffect(() => {
     fetchProduct();
     fetchProductRecords();
@@ -100,6 +110,13 @@ const ProductScreen = ({route, navigation}) => {
   };
 
   const renderRecordKey = item => item._id.toString();
+
+  const filteredRecord =
+    sort == ''
+      ? records
+      : sort == 'increase'
+      ? records.sort((a, b) => a.price - b.price)
+      : records.sort((a, b) => b.price - a.price);
 
   return (
     <Container>
@@ -127,10 +144,17 @@ const ProductScreen = ({route, navigation}) => {
             }}>
             Price List
           </Text>
-          <Text>Filtre</Text>
+          <Icon
+            name={
+              sort === 'increase' ? 'sort-numeric-asc' : 'sort-numeric-desc'
+            }
+            size={22}
+            style={{color: '#30336b'}}
+            onPress={handleChangeSort}
+          />
         </RecordHeader>
         <FlatList
-          data={records}
+          data={filteredRecord}
           renderItem={renderRecord}
           keyExtractor={renderRecordKey}
         />

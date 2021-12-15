@@ -1,4 +1,5 @@
 import React, {useRef, useState} from 'react';
+import {useSelector} from 'react-redux';
 import {
   View,
   Text,
@@ -14,14 +15,31 @@ import {Easing} from 'react-native-reanimated';
 
 import {SIZES} from '../constants';
 import SearchItem from './Search/SearchItem';
+import {} from '../store/productSlice';
+import {useEffect} from 'react';
 
 const {Value, timing} = Animated;
 
-const Header = () => {
+const Header = ({navigation}) => {
   const input = useRef(null);
+
+  const data = useSelector(state => state.products.data);
+  const [searchList, setSearchList] = useState([]);
 
   const [isFocused, setIsFocuesed] = useState(false);
   const [keyword, setKeyword] = useState('');
+
+  useEffect(() => {
+    if (keyword) {
+      setSearchList(
+        data.filter(product =>
+          product.title.toLowerCase().includes(keyword.toLowerCase()),
+        ),
+      );
+    } else {
+      setSearchList([]);
+    }
+  }, [keyword]);
 
   const _input_box_translate_x = new Value(SIZES.width);
   const _back_button_opacity = new Value(0);
@@ -153,12 +171,18 @@ const Header = () => {
                 </Text>
               </View>
             ) : (
-              <ScrollView>
-                <SearchItem />
-                <SearchItem />
-                <SearchItem />
-                <SearchItem />
-                <SearchItem />
+              <ScrollView style={{paddingTop: 80}}>
+                {searchList.map(product => (
+                  <SearchItem
+                    key={product._id}
+                    product={product}
+                    onPress={() =>
+                      navigation.navigate('ProductScreen', {
+                        product_id: product._id,
+                      })
+                    }
+                  />
+                ))}
               </ScrollView>
             )}
           </View>

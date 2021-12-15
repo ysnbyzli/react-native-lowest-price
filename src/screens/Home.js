@@ -46,7 +46,7 @@ const Home = ({navigation}) => {
 
   return (
     <View style={{flex: 1}}>
-      <Header />
+      <Header navigation={navigation} />
       <FlatList
         data={products}
         numColumns={2}

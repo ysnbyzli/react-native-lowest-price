@@ -3,16 +3,20 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import styled from 'styled-components';
 import {COLORS, FONTS} from '../../constants';
 
-const SearchItem = () => {
+const SearchItem = ({product, onPress}) => {
   return (
-    <Container>
-      <Icon name="search" size={16} color={COLORS.gray} />
-      <Text>Fake Result 4</Text>
+    <Container onPress={onPress}>
+      <Content>
+        <Icon name="search" size={16} color={COLORS.gray} />
+        <Text>{product.title}</Text>
+      </Content>
     </Container>
   );
 };
 
-const Container = styled.View`
+const Container = styled.TouchableWithoutFeedback``;
+
+const Content = styled.View`
   flex-direction: row;
   height: 40px;
   align-items: center;
