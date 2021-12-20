@@ -11,7 +11,7 @@ import {loginSchema} from '../validations';
 import {useDispatch, useSelector} from 'react-redux';
 import {userLoginRequest} from '../store/userSlice';
 
-const LoginScreen = ({route, navigation}) => {
+const LoginScreen = ({navigation}) => {
   const dispatch = useDispatch();
 
   const {loading, data, error} = useSelector(state => state.user);

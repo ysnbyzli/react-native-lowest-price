@@ -44,6 +44,11 @@ const Profile = ({navigation}) => {
           onPress={() => navigation.navigate('FavoritesScreen')}
         />
         <Item
+          title="Change Password"
+          icon="key-outline"
+          onPress={() => navigation.navigate('ChangePasswordScreen')}
+        />
+        <Item
           title="Products"
           icon="layers-outline"
           onPress={() => console.log('Product click')}
