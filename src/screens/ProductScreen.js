@@ -20,7 +20,7 @@ const ProductScreen = ({route, navigation}) => {
   const user = useSelector(selectUser);
   const [sort, setSort] = useState('');
 
-  const {product_id} = route.params;
+  const {product_id, isBarcod, barcod} = route.params;
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -29,18 +29,27 @@ const ProductScreen = ({route, navigation}) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [price, setPrice] = useState('0');
 
-  const fetchProduct = async () => {
+  const fetchProductById = async () => {
     try {
       const response = await api().get(`/products/${product_id}`);
       setProduct(response.data);
     } catch (error) {
-      console.log(error);
+      setError(error.response.data);
+    }
+  };
+
+  const fetchProductByBarcod = async () => {
+    try {
+      const response = await api().get(`/products/barcod/${barcod}`);
+      setProduct(response.data);
+    } catch (error) {
+      setError(error.response.data);
     }
   };
 
   const fetchProductRecords = async () => {
     try {
-      const response = await api().get(`/products/records/${product_id}`);
+      const response = await api().get(`/products/records/${product._id}`);
       setRecords(response.data);
     } catch (error) {
       console.log(error);
@@ -90,9 +99,18 @@ const ProductScreen = ({route, navigation}) => {
   };
 
   useEffect(() => {
-    fetchProduct();
-    fetchProductRecords();
+    if (isBarcod && !product) {
+      fetchProductByBarcod();
+    } else if (product_id) {
+      fetchProductById();
+    }
   }, []);
+
+  useEffect(() => {
+    if (product) {
+      fetchProductRecords();
+    }
+  }, [product]);
 
   useEffect(() => {
     if (error) {
@@ -134,30 +152,34 @@ const ProductScreen = ({route, navigation}) => {
         <ProductImage source={{uri: product?.image}} resizeMode="cover" />
         <Info>
           <Title>{product?.title}</Title>
-          <Price>{product?.price}</Price>
+          <Price>{product?.barcod}</Price>
         </Info>
-        <RecordHeader>
-          <Text
-            style={{
-              color: COLORS.black,
-              fontFamily: FONTS.regular,
-            }}>
-            Price List
-          </Text>
-          <Icon
-            name={
-              sort === 'increase' ? 'sort-numeric-asc' : 'sort-numeric-desc'
-            }
-            size={22}
-            style={{color: '#30336b'}}
-            onPress={handleChangeSort}
-          />
-        </RecordHeader>
-        <FlatList
-          data={filteredRecord}
-          renderItem={renderRecord}
-          keyExtractor={renderRecordKey}
-        />
+        {records && (
+          <>
+            <RecordHeader>
+              <Text
+                style={{
+                  color: COLORS.black,
+                  fontFamily: FONTS.regular,
+                }}>
+                Price List
+              </Text>
+              <Icon
+                name={
+                  sort === 'increase' ? 'sort-numeric-asc' : 'sort-numeric-desc'
+                }
+                size={22}
+                style={{color: '#30336b'}}
+                onPress={handleChangeSort}
+              />
+            </RecordHeader>
+            <FlatList
+              data={filteredRecord}
+              renderItem={renderRecord}
+              keyExtractor={renderRecordKey}
+            />
+          </>
+        )}
       </Body>
       {user && (
         <>

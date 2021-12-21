@@ -1,6 +1,7 @@
 import React from 'react';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 import CustomDrawer from '../components/CustomDrawer';
 import Home from '../screens/Home';
 import {COLORS, FONTS} from '../constants';
@@ -8,6 +9,7 @@ import {useSelector} from 'react-redux';
 import {selectUser} from '../store/userSlice';
 import ProfileStack from './ProfileStack';
 import HomeStack from './HomeStack';
+import BarcodeScanner from '../screens/BarcodeScanner';
 
 const Drawer = createDrawerNavigator();
 
@@ -46,6 +48,15 @@ const AppStack = () => {
           }}
         />
       )}
+      <Drawer.Screen
+        name="Barcode"
+        component={BarcodeScanner}
+        options={{
+          drawerIcon: ({color}) => (
+            <AntDesign name="barcode" size={22} color={color} />
+          ),
+        }}
+      />
     </Drawer.Navigator>
   );
 };

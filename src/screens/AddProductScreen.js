@@ -54,18 +54,15 @@ const AddProductScreen = ({navigation}) => {
   };
 
   const handleChangeImageFromCamera = async () => {
-    await launchCamera(
-      {mediaType: 'photo', quality: 1, saveToPhotos: true},
-      res => {
-        if (res.didCancel) return;
-        setImage({
-          uri: res.assets[0].uri,
-          type: res.assets[0].type,
-          name: res.assets[0].fileName,
-        });
-        onHandleModalClose();
-      },
-    );
+    await launchCamera({mediaType: 'photo', quality: 1}, res => {
+      if (res.didCancel) return;
+      setImage({
+        uri: res.assets[0].uri,
+        type: res.assets[0].type,
+        name: res.assets[0].fileName,
+      });
+      onHandleModalClose();
+    });
   };
 
   const handleChangeImageFromGallery = async () => {

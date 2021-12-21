@@ -9,7 +9,7 @@ export const fetchAllProduct = createAsyncThunk(
       const response = await api().get('/products');
       return response.data;
     } catch (error) {
-      console.log('error');
+      console.log('ürünler çekilirken hata oldu');
     }
   },
 );

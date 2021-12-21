@@ -37,6 +37,9 @@ const FavoriteItem = ({item}) => {
 const Container = styled.View`
   flex-direction: row;
   padding: 10px;
+  margin: 10px;
+  border-radius: 10px;
+  background-color: ${COLORS.white};
 `;
 const Image = styled.Image`
   height: 80px;

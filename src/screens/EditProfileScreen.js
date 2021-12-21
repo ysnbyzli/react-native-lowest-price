@@ -13,6 +13,7 @@ import CustomButton from '../components/CustomButton';
 import Item from '../components/Profile/Item';
 import Button from '../components/Form/Button';
 import Avatar from '../components/Avatar';
+import {PermissionsAndroid} from 'react-native';
 
 const EditProfileScreen = () => {
   const [show, setShow] = useState(false);
@@ -20,6 +21,24 @@ const EditProfileScreen = () => {
 
   const {loading, data} = useSelector(state => state.user);
   const dispatch = useDispatch();
+
+  const requestCameraPermission = async () => {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.CAMERA,
+        {
+          title: 'App Camera Permission',
+          message: 'App needs access to your camera ',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        onHandleModalShow();
+      }
+    } catch (error) {}
+  };
 
   const onHandleModalShow = () => {
     setShow(true);
@@ -29,30 +48,17 @@ const EditProfileScreen = () => {
     setShow(false);
   };
 
-  // useEffect(() => {
-  //   if (data) {
-  //     showMessage({
-  //       message: 'Profile updated successfully',
-  //       type: 'success',
-  //       icon: 'success',
-  //     });
-  //   }
-  // }, [data]);
-
   const handleChangeImageFromCamera = async () => {
-    await launchCamera(
-      {mediaType: 'photo', quality: 1, saveToPhotos: true},
-      res => {
-        if (res.didCancel) return;
-        dispatch(addImage(res.assets[0].uri));
-        setImage({
-          uri: res.assets[0].uri,
-          type: res.assets[0].type,
-          name: res.assets[0].fileName,
-        });
-        onHandleModalClose();
-      },
-    );
+    await launchCamera({mediaType: 'photo', quality: 1}, res => {
+      if (res.didCancel) return;
+      if (res.assets) dispatch(addImage(res.assets[0]?.uri));
+      setImage({
+        uri: res.assets[0]?.uri,
+        type: res.assets[0]?.type,
+        name: res.assets[0]?.fileName,
+      });
+      onHandleModalClose();
+    });
   };
 
   const handleChangeImageFromGallery = async () => {
@@ -101,7 +107,7 @@ const EditProfileScreen = () => {
 
   return (
     <Container>
-      <HandleAvatar onPress={onHandleModalShow}>
+      <HandleAvatar onPress={requestCameraPermission}>
         <Content>
           <Avatar width={90} height={90} />
           <Text>Change Profile Image</Text>
