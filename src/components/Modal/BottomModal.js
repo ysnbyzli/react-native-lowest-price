@@ -38,22 +38,25 @@ const BottomModal = ({
           style={{
             backgroundColor: '#FFFFFF',
             width: '100%',
-            borderTopLeftRadius: 15,
-            borderTopRightRadius: 15,
+            borderTopLeftRadius: 35,
+            borderTopRightRadius: 35,
             paddingHorizontal: 10,
+            paddingVertical: 20,
             maxHeight: SIZES.height * 0.4,
           }}>
           <View>
-            <Text
-              style={{
-                color: COLORS.primary,
-                fontSize: 20,
-                margin: 15,
-                marginLeft: 20,
-                fontFamily: FONTS.semiBold,
-              }}>
-              {title}
-            </Text>
+            {title && (
+              <Text
+                style={{
+                  color: COLORS.primary,
+                  fontSize: 20,
+                  margin: 15,
+                  marginLeft: 20,
+                  fontFamily: FONTS.semiBold,
+                }}>
+                {title}
+              </Text>
+            )}
             <View style={{margin: 15, marginTop: 0}}>{children}</View>
           </View>
         </View>

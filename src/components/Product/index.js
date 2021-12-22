@@ -22,18 +22,17 @@ const Container = styled.TouchableWithoutFeedback``;
 const Content = styled.View`
   margin: 10px;
   flex: 1;
-  background-color: ${COLORS.white};
+
   border-radius: 10px;
 `;
 
 const Image = styled.Image`
   min-height: 180px;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
+  border-radius: 10px;
 `;
 
 const Body = styled.View`
-  padding: 8px;
+  padding: 6px;
 `;
 
 const Title = styled.Text`

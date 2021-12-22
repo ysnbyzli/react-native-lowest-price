@@ -4,17 +4,24 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import {useSelector} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/FontAwesome';
-
-import {COLORS, FONTS, SIZES} from '../constants';
+import {showMessage} from 'react-native-flash-message';
+import {COLORS, FONTS, images, SIZES} from '../constants';
 import api from '../utils/api';
-import {FlatList, Text, TextInput, View} from 'react-native';
+import {
+  ActivityIndicator,
+  FlatList,
+  Image,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import Record from '../components/Record';
 import CustomModal from '../components/Modal/CustomModal';
 import {selectUser} from '../store/userSlice';
 import FloatingButton from '../components/FloatingButton';
 import Button from '../components/Form/Button';
-import {showMessage} from 'react-native-flash-message';
 import Favorite from '../components/Favorite';
+import RandomProduct from '../components/RandomProduct';
 
 const ProductScreen = ({route, navigation}) => {
   const user = useSelector(selectUser);
@@ -25,7 +32,7 @@ const ProductScreen = ({route, navigation}) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [product, setProduct] = useState(null);
-  const [records, setRecords] = useState(null);
+  const [records, setRecords] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [price, setPrice] = useState('0');
 
@@ -49,10 +56,12 @@ const ProductScreen = ({route, navigation}) => {
 
   const fetchProductRecords = async () => {
     try {
+      setLoading(true);
       const response = await api().get(`/products/records/${product._id}`);
       setRecords(response.data);
+      setLoading(false);
     } catch (error) {
-      console.log(error);
+      setLoading(false);
     }
   };
 
@@ -74,6 +83,7 @@ const ProductScreen = ({route, navigation}) => {
         ...response.data,
         user: {
           profile_image: user.profile_image,
+          username: user.username,
         },
       };
       setRecords([newRecord, ...records]);
@@ -112,17 +122,6 @@ const ProductScreen = ({route, navigation}) => {
     }
   }, [product]);
 
-  useEffect(() => {
-    if (error) {
-      showMessage({
-        type: 'danger',
-        icon: 'danger',
-        message: error.message,
-      });
-      setError(null);
-    }
-  }, [loading, error]);
-
   const renderRecord = ({item}) => {
     return <Record record={item} />;
   };
@@ -145,78 +144,103 @@ const ProductScreen = ({route, navigation}) => {
           style={{color: COLORS.black}}
           onPress={() => navigation.goBack()}
         />
-        {/* ! FAVORITE */}
         {user && product && <Favorite product={product} />}
       </Header>
-      <Body>
-        <ProductImage source={{uri: product?.image}} resizeMode="cover" />
-        <Info>
-          <Title>{product?.title}</Title>
-          <Price>{product?.barcod}</Price>
-        </Info>
-        {records && (
-          <>
-            <RecordHeader>
-              <Text
-                style={{
-                  color: COLORS.black,
-                  fontFamily: FONTS.regular,
-                }}>
-                Price List
-              </Text>
-              <Icon
-                name={
-                  sort === 'increase' ? 'sort-numeric-asc' : 'sort-numeric-desc'
-                }
-                size={22}
-                style={{color: '#30336b'}}
-                onPress={handleChangeSort}
-              />
-            </RecordHeader>
-            <FlatList
-              data={filteredRecord}
-              renderItem={renderRecord}
-              keyExtractor={renderRecordKey}
-            />
-          </>
-        )}
-      </Body>
-      {user && (
+      {error ? (
+        <NotFound>
+          <NotFoundImage source={images.not_found} resizeMode="contain" />
+          <RandomProduct />
+        </NotFound>
+      ) : (
         <>
-          <CustomModal
-            modalVisible={modalVisible}
-            setModalVisible={setModalVisible}>
-            <ModalHeader>
-              <ModalTitle>{product?.title.toUpperCase()}</ModalTitle>
-              <ModalCancel onPress={() => setModalVisible(false)}>
-                Cancel
-              </ModalCancel>
-            </ModalHeader>
-            <View
-              style={{
-                marginTop: 10,
-                borderRadius: 10,
-                paddingHorizontal: 10,
-                paddingVertical: 5,
-                borderColor: COLORS.black,
-                borderWidth: 1,
-              }}>
-              <TextInput
+          <Body>
+            <ProductImage source={{uri: product?.image}} resizeMode="cover" />
+            <Info>
+              <Title>{product?.title}</Title>
+              <Price>{product?.barcod}</Price>
+            </Info>
+            {loading ? (
+              <View
                 style={{
-                  color: COLORS.black,
-                }}
-                value={price}
-                keyboardType="number-pad"
-                onChangeText={value => setPrice(value)}
-              />
-            </View>
-            <Button
-              text="Add Price"
-              onPress={() => addProductRecordPrice(product_id, price)}
-              loading={loading}
-            />
-          </CustomModal>
-          <FloatingButton onPress={() => setModalVisible(true)} />
+                  flex: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <ActivityIndicator size={27} />
+              </View>
+            ) : (
+              <View style={{flex: 1}}>
+                {records.length > 0 ? (
+                  <>
+                    <RecordHeader>
+                      <Icon
+                        name={
+                          sort === 'increase'
+                            ? 'sort-numeric-asc'
+                            : 'sort-numeric-desc'
+                        }
+                        size={22}
+                        style={{color: '#30336b', marginLeft: 'auto'}}
+                        onPress={handleChangeSort}
+                      />
+                    </RecordHeader>
+                    <FlatList
+                      data={filteredRecord}
+                      renderItem={renderRecord}
+                      keyExtractor={renderRecordKey}
+                      showsVerticalScrollIndicator={false}
+                    />
+                  </>
+                ) : (
+                  <View style={{alignItems: 'center'}}>
+                    <Image
+                      source={images.empty}
+                      style={{width: SIZES.width * 0.8, height: 320}}
+                      resizeMode="cover"
+                    />
+                  </View>
+                )}
+              </View>
+            )}
+          </Body>
+          {user && (
+            <>
+              <CustomModal
+                modalVisible={modalVisible}
+                setModalVisible={setModalVisible}>
+                <ModalHeader>
+                  <ModalTitle>{product?.title.toUpperCase()}</ModalTitle>
+                  <ModalCancel onPress={() => setModalVisible(false)}>
+                    Cancel
+                  </ModalCancel>
+                </ModalHeader>
+                <View
+                  style={{
+                    marginTop: 10,
+                    borderRadius: 10,
+                    paddingHorizontal: 10,
+                    paddingVertical: 5,
+                    borderColor: COLORS.black,
+                    borderWidth: 1,
+                  }}>
+                  <TextInput
+                    style={{
+                      color: COLORS.black,
+                    }}
+                    value={price}
+                    keyboardType="number-pad"
+                    onChangeText={value => setPrice(value)}
+                  />
+                </View>
+                <Button
+                  text="Add Price"
+                  onPress={() => addProductRecordPrice(product_id, price)}
+                  loading={loading}
+                />
+              </CustomModal>
+              <FloatingButton onPress={() => setModalVisible(true)} />
+            </>
+          )}
         </>
       )}
     </Container>
@@ -263,8 +287,8 @@ const Price = styled.Text`
 `;
 
 const RecordHeader = styled.View`
-  margin-top: 10px;
-  margin-bottom: 10px;
+  margin-top: 15px;
+  margin-bottom: 15px;
   flex-direction: row;
   justify-content: space-between;
 `;
@@ -282,6 +306,16 @@ const ModalTitle = styled.Text`
 const ModalCancel = styled.Text`
   color: ${COLORS.danger};
   font-family: ${FONTS.regular};
+`;
+
+const NotFound = styled.View`
+  flex: 1;
+  align-items: center;
+`;
+
+const NotFoundImage = styled.Image`
+  width: ${SIZES.width * 0.8}px;
+  height: 300px;
 `;
 
 export default ProductScreen;

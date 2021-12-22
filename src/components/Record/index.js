@@ -23,9 +23,7 @@ const Container = styled.View`
   background-color: ${COLORS.white};
   border-radius: 15px;
   margin-bottom: 15px;
-  padding-top: 15px;
-  padding-bottom: 15px;
-  padding: 25px;
+  padding: 15px;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
@@ -43,8 +41,8 @@ const Price = styled.Text`
 
 const Avatar = styled.Image`
   height: 40px;
-  width: 40px;
-  border-radius: 100px;
+  width: 45px;
+  border-radius: 20px;
 `;
 
 const Name = styled.Text`

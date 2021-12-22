@@ -10,8 +10,6 @@ const BarcodeScanner = ({navigation}) => {
 
   const barcodeReceived = e => {
     navigation.navigate('ProductScreen', {barcod: e.data, isBarcod: true});
-    // console.log('Barcode: ' + e.data);
-    // console.log('Type: ' + e.type);
   };
 
   return (

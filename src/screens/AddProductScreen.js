@@ -1,9 +1,10 @@
 import React, {useEffect, useState} from 'react';
-import {View, Text} from 'react-native';
+import {Image, ScrollView, View} from 'react-native';
 import styled from 'styled-components';
 import {useFormik} from 'formik';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {useDispatch, useSelector} from 'react-redux';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 
 import {addProduct, changeError, changeSuccess} from '../store/productSlice';
 import Input from '../components/Form/Input';
@@ -11,7 +12,7 @@ import Button from '../components/Form/Button';
 import BottomModal from '../components/Modal/BottomModal';
 import Item from '../components/Profile/Item';
 import CustomButton from '../components/CustomButton';
-import {COLORS, FONTS} from '../constants';
+import {COLORS, images, SIZES} from '../constants';
 import {showMessage} from 'react-native-flash-message';
 
 const AddProductScreen = ({navigation}) => {
@@ -110,71 +111,68 @@ const AddProductScreen = ({navigation}) => {
 
   return (
     <Container>
-      <HandleImage onPress={onHandleModalShow}>
-        <ImageContent>
-          {image ? (
-            <ProductImage source={{uri: image.uri}} resizeMode="cover" />
-          ) : (
-            <>
-              <View
-                style={{
-                  height: 120,
-                  width: 120,
-                  backgroundColor: COLORS.active,
-                  borderRadius: 20,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}>
-                <Text style={{color: COLORS.white, fontFamily: FONTS.regular}}>
-                  Resim Ekle
-                </Text>
-              </View>
-            </>
-          )}
-        </ImageContent>
-      </HandleImage>
-      <Input
-        value={values.title}
-        onChangeText={handleChange('title')}
-        label="Title"
-      />
-      <Input
-        value={values.price}
-        onChangeText={handleChange('price')}
-        label="Price"
-      />
-      <Input
-        value={values.barcod}
-        onChangeText={handleChange('barcod')}
-        label="Barcod"
-      />
-      <Button
-        text="Add Product"
-        onPress={() => handleSubmit()}
-        loading={loading}
-      />
-      <BottomModal
-        onTouchOutSide={onHandleModalClose}
-        title="Change Photo"
-        isShow={show}
-        onHandleModalClose={onHandleModalClose}>
-        <Item
-          icon="camera-outline"
-          title="Take a photo from the camera"
-          onPress={handleChangeImageFromCamera}
+      <Header>
+        <AntDesign
+          name="arrowleft"
+          size={22}
+          onPress={() => navigation.goBack()}
         />
-        <Item
-          icon="images-outline"
-          title="Select photo from gallery"
-          onPress={handleChangeImageFromGallery}
+      </Header>
+      <ScrollView style={{flex: 1}}>
+        <HandleImage onPress={onHandleModalShow}>
+          <ImageContent>
+            {image ? (
+              <ProductImage source={{uri: image.uri}} resizeMode="cover" />
+            ) : (
+              <Image
+                source={images.images}
+                style={{width: SIZES.width * 0.9, height: 220}}
+              />
+            )}
+          </ImageContent>
+        </HandleImage>
+        <Input
+          value={values.title}
+          onChangeText={handleChange('title')}
+          label="Title"
         />
-        <CustomButton
-          text="CANCEL"
-          bg={COLORS.danger}
-          onPress={onHandleModalClose}
-          padding={10}
+        <Input
+          value={values.price}
+          onChangeText={handleChange('price')}
+          label="Price"
         />
-      </BottomModal>
+        <Input
+          value={values.barcod}
+          onChangeText={handleChange('barcod')}
+          label="Barcod"
+        />
+        <Button
+          text="Add Product"
+          onPress={() => handleSubmit()}
+          loading={loading}
+        />
+        <BottomModal
+          onTouchOutSide={onHandleModalClose}
+          isShow={show}
+          onHandleModalClose={onHandleModalClose}>
+          <Item
+            icon="camera-outline"
+            title="Take a photo from the camera"
+            onPress={handleChangeImageFromCamera}
+          />
+          <Item
+            icon="images-outline"
+            title="Select photo from gallery"
+            onPress={handleChangeImageFromGallery}
+          />
+          <CustomButton
+            text="CANCEL"
+            bg={COLORS.danger}
+            onPress={onHandleModalClose}
+            padding={10}
+          />
+        </BottomModal>
+      </ScrollView>
     </Container>
   );
 };
@@ -182,18 +180,20 @@ const AddProductScreen = ({navigation}) => {
 const Container = styled.View`
   flex: 1;
   padding: 10px;
-  justify-content: center;
 `;
+
+const Header = styled.View``;
 
 const HandleImage = styled.TouchableWithoutFeedback``;
 
 const ImageContent = styled.View`
   align-items: center;
+  margin-bottom: 10px;
 `;
 
 const ProductImage = styled.Image`
-  width: 120px;
-  height: 120px;
+  width: ${SIZES.width * 0.9}px;
+  height: 220px;
   border-radius: 20px;
 `;
 

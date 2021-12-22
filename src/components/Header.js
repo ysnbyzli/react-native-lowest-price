@@ -13,7 +13,7 @@ import {
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {Easing} from 'react-native-reanimated';
 
-import {SIZES} from '../constants';
+import {COLORS, FONTS, SIZES} from '../constants';
 import SearchItem from './Search/SearchItem';
 import {} from '../store/productSlice';
 import {useEffect} from 'react';
@@ -114,7 +114,9 @@ const Header = ({navigation}) => {
         <View style={styles.header}>
           <View style={styles.header_inner}>
             <View>
-              <Text>Logo</Text>
+              <Text style={{fontFamily: FONTS.semiBold, color: COLORS.primary}}>
+                BULURUM
+              </Text>
             </View>
             <TouchableHighlight
               activeOpacity={1}

@@ -19,7 +19,7 @@ const LoginScreen = ({navigation}) => {
   const handleLogin = async form => {
     dispatch(userLoginRequest(form));
   };
-  // If user data exists send user to home page
+
   useEffect(() => {
     if (data) navigation.navigate('Root', {screen: 'Home'});
   }, [data]);
