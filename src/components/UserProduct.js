@@ -4,22 +4,14 @@ import {COLORS, FONTS, SIZES} from '../constants';
 import {getRelativeTime} from '../utils/helper';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {TouchableWithoutFeedback, View} from 'react-native';
-import {useDispatch} from 'react-redux';
-import {deleteProductToFavorites} from '../store/favoriteSlice';
 
-const FavoriteItem = ({item, onPress}) => {
-  const dispatch = useDispatch();
-
-  const handleDelete = item => {
-    dispatch(deleteProductToFavorites(item));
-  };
-
+const UserProduct = ({item, onPress}) => {
   return (
     <TouchableWithoutFeedback onPress={onPress}>
       <Container>
-        <Image source={{uri: item.product.image}} resizeMode="cover" />
+        <Image source={{uri: item.image}} resizeMode="cover" />
         <Content>
-          <Title>{item.product.title}</Title>
+          <Title>{item.title}</Title>
           <Time>{getRelativeTime(item.createdAt)}</Time>
         </Content>
         <ButtonDelete onPress={() => handleDelete(item)}>
@@ -65,4 +57,5 @@ const Time = styled.Text`
 const ButtonDelete = styled.TouchableWithoutFeedback`
   margin-left: auto;
 `;
-export default FavoriteItem;
+
+export default UserProduct;

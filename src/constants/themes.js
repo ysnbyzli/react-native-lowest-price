@@ -21,7 +21,7 @@ export const COLORS = {
   black: '#000000',
   active: '#40B574',
   in_active: '#EEF4F1',
-  danger: '#bb2124',
+  danger: '#e74c3c',
   warning: '#f0ad4e',
   success: '#22bb33',
   gray: '#808080',

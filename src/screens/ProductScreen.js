@@ -41,6 +41,7 @@ const ProductScreen = ({route, navigation}) => {
       const response = await api().get(`/products/${product_id}`);
       setProduct(response.data);
     } catch (error) {
+      console.log(error.response.data);
       setError(error.response.data);
     }
   };
@@ -109,7 +110,7 @@ const ProductScreen = ({route, navigation}) => {
   };
 
   useEffect(() => {
-    if (isBarcod && !product) {
+    if (isBarcod) {
       fetchProductByBarcod();
     } else if (product_id) {
       fetchProductById();

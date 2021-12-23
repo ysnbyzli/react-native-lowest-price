@@ -14,6 +14,24 @@ export const fetchAllProduct = createAsyncThunk(
   },
 );
 
+export const deleteProduct = createAsyncThunk(
+  'user/deleteProduct',
+  async id => {
+    const token = await AsyncStorage.getItem('token');
+    try {
+      const response = await api().delete(`/products/${id}`, {
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.log('Kullanıcıya ait ürünler silinirken bir hata oluştu!');
+    }
+  },
+);
+
 export const addProduct = createAsyncThunk(
   'products/addProduct',
   async (form, {rejectWithValue}) => {
@@ -33,6 +51,24 @@ export const addProduct = createAsyncThunk(
   },
 );
 
+export const fetchAllUserProducts = createAsyncThunk(
+  'user/fetchAllProducts',
+  async () => {
+    const token = await AsyncStorage.getItem('token');
+    try {
+      const response = await api().get('/users/products', {
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.log('Kullanıcıya ait ürünler çekilirken bir hata oluştu!');
+    }
+  },
+);
+
 export const productSlice = createSlice({
   name: 'products',
   initialState: {
@@ -40,6 +76,7 @@ export const productSlice = createSlice({
     loading: false,
     error: null,
     isAddSuccess: false,
+    userProducts: [],
   },
   reducers: {
     changeError: (state, action) => {
@@ -68,6 +105,7 @@ export const productSlice = createSlice({
     });
     builder.addCase(addProduct.fulfilled, (state, action) => {
       state.data.unshift(action.payload);
+      state.userProducts.unshift(action.payload);
       state.loading = false;
       state.isAddSuccess = true;
     });
@@ -76,9 +114,35 @@ export const productSlice = createSlice({
       state.loading = false;
       state.isAddSuccess = false;
     });
+    builder.addCase(deleteProduct.pending, state => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(deleteProduct.fulfilled, (state, action) => {
+      state.data = state.data.filter(item => item._id !== action.payload._id);
+      state.loading = false;
+    });
+    builder.addCase(deleteProduct.rejected, state => {
+      state.loading = false;
+      state.error = 'Ürün silinirken bir hata olustu!';
+    });
+    builder.addCase(fetchAllUserProducts.pending, state => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(fetchAllUserProducts.fulfilled, (state, action) => {
+      state.userProducts = action.payload;
+      state.loading = false;
+    });
+    builder.addCase(fetchAllUserProducts.rejected, state => {
+      state.loading = false;
+      state.error = 'Kullanıcıya ait ürünler çekilirken bir hata oluştu!';
+    });
   },
 });
 
 export const {changeError, changeSuccess} = productSlice.actions;
+
+export const selectUserProducts = state => state.products.userProducts;
 
 export default productSlice.reducer;

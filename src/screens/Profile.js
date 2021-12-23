@@ -51,7 +51,7 @@ const Profile = ({navigation}) => {
         <Item
           title="Products"
           icon="layers-outline"
-          onPress={() => console.log('Product click')}
+          onPress={() => navigation.navigate('UserProductScreen')}
         />
       </Body>
     </Container>

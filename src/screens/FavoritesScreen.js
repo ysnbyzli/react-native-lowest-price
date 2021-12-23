@@ -12,7 +12,14 @@ const FavoritesScreen = ({navigation}) => {
   const favorites = useSelector(selectFavorites);
 
   const renderProduct = ({item}) => {
-    return <FavoriteItem item={item} />;
+    return (
+      <FavoriteItem
+        item={item}
+        onPress={() => {
+          navigation.navigate('ProductScreen', {product_id: item.product._id});
+        }}
+      />
+    );
   };
 
   const renderProductKey = item => item._id.toString();

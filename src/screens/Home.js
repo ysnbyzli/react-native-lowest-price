@@ -2,7 +2,7 @@ import React, {useEffect} from 'react';
 import {FlatList, View} from 'react-native';
 import {useSelector} from 'react-redux';
 import {useDispatch} from 'react-redux';
-import {fetchAllProduct} from '../store/productSlice';
+import {fetchAllProduct, fetchAllUserProducts} from '../store/productSlice';
 import {selectUser} from '../store/userSlice';
 import Header from '../components/Header';
 import Product from '../components/Product';
@@ -28,6 +28,7 @@ const Home = ({navigation}) => {
     if (user && favorites.length == 0) {
       dispatch(fetchAllFavorites());
       changeFavoriteSuccess(false);
+      dispatch(fetchAllUserProducts());
     }
   }, [user]);
 

@@ -27,12 +27,12 @@ const CustomModal = ({modalVisible, setModalVisible, children}) => {
             shadowColor: '#000',
             zIndex: 100000,
             shadowOffset: {
-              width: 0,
-              height: 2,
+              width: 10,
+              height: 10,
             },
-            shadowOpacity: 0.25,
-            shadowRadius: 4,
-            elevation: 5,
+            shadowOpacity: 0.75,
+            shadowRadius: 8,
+            elevation: 10,
           }}>
           {children}
         </View>

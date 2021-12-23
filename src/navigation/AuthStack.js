@@ -1,7 +1,6 @@
 import React from 'react';
 import {useSelector} from 'react-redux';
 import {createStackNavigator} from '@react-navigation/stack';
-import {selectUser} from '../store/userSlice';
 import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
 import AppStack from './AppStack';
@@ -9,6 +8,8 @@ import AddProductScreen from '../screens/AddProductScreen';
 import ProductScreen from '../screens/ProductScreen';
 import ChangePasswordScreen from '../screens/ChangePasswordScreen';
 import OnBoardingScreen from '../screens/OnBoardingScreen';
+import UserProductScreen from '../screens/UserProductScreen';
+
 const Stack = createStackNavigator();
 
 const AuthStack = () => {
@@ -35,6 +36,7 @@ const AuthStack = () => {
       )}
 
       <Stack.Screen name="ProductScreen" component={ProductScreen} />
+      <Stack.Screen name="UserProductScreen" component={UserProductScreen} />
     </Stack.Navigator>
   );
 };
