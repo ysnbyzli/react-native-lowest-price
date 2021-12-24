@@ -1,10 +1,12 @@
 import React, {useEffect, useState} from 'react';
-import {Image, ScrollView, View} from 'react-native';
+import {Image, ScrollView, Text, View} from 'react-native';
 import styled from 'styled-components';
 import {useFormik} from 'formik';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {useDispatch, useSelector} from 'react-redux';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import CurrencyInput from 'react-native-currency-input';
+import {Picker} from '@react-native-picker/picker';
 
 import {addProduct, changeError, changeSuccess} from '../store/productSlice';
 import Input from '../components/Form/Input';
@@ -14,12 +16,18 @@ import Item from '../components/Profile/Item';
 import CustomButton from '../components/CustomButton';
 import {COLORS, images, SIZES} from '../constants';
 import {showMessage} from 'react-native-flash-message';
+import {selectCategories} from '../store/categorySlice';
+import addProductSchema from '../validations/addProductSchema';
 
 const AddProductScreen = ({navigation}) => {
   const [show, setShow] = useState(false);
   const [image, setImage] = useState(null);
+  const [price, setPrice] = useState(0);
+  const [selectedCategory, setSelectedCategory] = useState(null);
 
   const {loading, error, isAddSuccess} = useSelector(state => state.products);
+
+  const categories = useSelector(selectCategories);
 
   useEffect(() => {
     if (isAddSuccess) {
@@ -98,16 +106,19 @@ const AddProductScreen = ({navigation}) => {
     dispatch(addProduct(formData));
   };
 
-  const {handleSubmit, handleChange, values} = useFormik({
-    initialValues: {
-      title: '',
-      price: '',
-      barcod: '',
-    },
-    onSubmit: values => {
-      handleAddProduct(values);
-    },
-  });
+  const {handleSubmit, handleBlur, handleChange, values, errors, touched} =
+    useFormik({
+      initialValues: {
+        title: '',
+        price: '',
+        barcod: '',
+        market: '',
+      },
+      validationSchema: addProductSchema,
+      onSubmit: values => {
+        handleAddProduct(values);
+      },
+    });
 
   return (
     <Container>
@@ -118,7 +129,9 @@ const AddProductScreen = ({navigation}) => {
           onPress={() => navigation.goBack()}
         />
       </Header>
-      <ScrollView style={{flex: 1}}>
+      <ScrollView
+        style={{flex: 1, marginVertical: 15}}
+        showsVerticalScrollIndicator={false}>
         <HandleImage onPress={onHandleModalShow}>
           <ImageContent>
             {image ? (
@@ -135,17 +148,68 @@ const AddProductScreen = ({navigation}) => {
           value={values.title}
           onChangeText={handleChange('title')}
           label="Title"
+          error={errors.title}
+          touched={touched.title}
+          onBlur={handleBlur('title')}
         />
         <Input
-          value={values.price}
-          onChangeText={handleChange('price')}
-          label="Price"
+          value={values.market}
+          onChangeText={handleChange('market')}
+          label="Market"
+          error={errors.market}
+          touched={touched.market}
+          onBlur={handleBlur('market')}
         />
+        <View>
+          <Text style={{paddingLeft: 8, marginTop: 8}}>Price</Text>
+          <View
+            style={{
+              backgroundColor: '#f1eded',
+              borderRadius: 10,
+              marginTop: 12,
+              paddingLeft: 12,
+            }}>
+            <CurrencyInput
+              value={price}
+              onChangeValue={setPrice}
+              prefix="$"
+              delimiter=","
+              separator="."
+              precision={2}
+            />
+          </View>
+        </View>
         <Input
           value={values.barcod}
           onChangeText={handleChange('barcod')}
           label="Barcod"
+          error={errors.barcod}
+          touched={touched.barcod}
+          onBlur={handleBlur('barcod')}
         />
+        <View>
+          <Text style={{paddingLeft: 8, marginTop: 8}}>Category</Text>
+          <View
+            style={{
+              backgroundColor: '#f1eded',
+              borderRadius: 10,
+              marginTop: 12,
+              paddingLeft: 12,
+            }}>
+            <Picker
+              selectedValue={selectedCategory}
+              onValueChange={itemValue => setSelectedCategory(itemValue)}>
+              {categories.map(category => (
+                <Picker.Item
+                  label={category.title}
+                  value={category._id}
+                  key={category._id}
+                />
+              ))}
+            </Picker>
+          </View>
+        </View>
+
         <Button
           text="Add Product"
           onPress={() => handleSubmit()}

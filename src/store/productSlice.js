@@ -46,6 +46,7 @@ export const addProduct = createAsyncThunk(
       });
       return response.data;
     } catch (error) {
+      console.log('redux ::> ', error);
       return rejectWithValue(error.response.data);
     }
   },
@@ -77,6 +78,7 @@ export const productSlice = createSlice({
     error: null,
     isAddSuccess: false,
     userProducts: [],
+    activeCategory: 'All',
   },
   reducers: {
     changeError: (state, action) => {
@@ -84,6 +86,9 @@ export const productSlice = createSlice({
     },
     changeSuccess: (state, action) => {
       state.isAddSuccess = action.payload;
+    },
+    changeActiveCategory: (state, action) => {
+      state.activeCategory = action.payload;
     },
   },
   extraReducers: builder => {
@@ -141,7 +146,23 @@ export const productSlice = createSlice({
   },
 });
 
-export const {changeError, changeSuccess} = productSlice.actions;
+export const {changeError, changeSuccess, changeActiveCategory} =
+  productSlice.actions;
+
+export const selectFilteredProducts = state => {
+  if (state.products.activeCategory === 'All') {
+    return state.products.data;
+  }
+  return state.products.data.filter(item =>
+    state.products.activeCategory === 'Food'
+      ? item.category.title === 'Food'
+      : state.products.activeCategory === 'Clothes'
+      ? item.category.title === 'Clothes'
+      : state.products.activeCategory === 'Technology'
+      ? item.category.title === 'Technology'
+      : item.category.title === 'Accessory',
+  );
+};
 
 export const selectUserProducts = state => state.products.userProducts;
 

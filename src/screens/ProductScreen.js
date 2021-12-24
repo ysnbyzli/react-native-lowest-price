@@ -5,6 +5,8 @@ import {useSelector} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {showMessage} from 'react-native-flash-message';
+import CurrencyInput from 'react-native-currency-input';
+
 import {COLORS, FONTS, images, SIZES} from '../constants';
 import api from '../utils/api';
 import {
@@ -15,6 +17,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
+
 import Record from '../components/Record';
 import CustomModal from '../components/Modal/CustomModal';
 import {selectUser} from '../store/userSlice';
@@ -22,6 +25,28 @@ import FloatingButton from '../components/FloatingButton';
 import Button from '../components/Form/Button';
 import Favorite from '../components/Favorite';
 import RandomProduct from '../components/RandomProduct';
+
+const headerComponent = (product, sort, handleChangeSort) => {
+  return (
+    <View>
+      <ProductImage source={{uri: product?.image}} resizeMode="cover" />
+      <Info>
+        <View>
+          <Title>{product?.title}</Title>
+        </View>
+        <Price>{product?.barcod}</Price>
+      </Info>
+      <RecordHeader>
+        <Icon
+          name={sort === 'increase' ? 'sort-numeric-asc' : 'sort-numeric-desc'}
+          size={22}
+          style={{color: '#30336b', marginLeft: 'auto'}}
+          onPress={handleChangeSort}
+        />
+      </RecordHeader>
+    </View>
+  );
+};
 
 const ProductScreen = ({route, navigation}) => {
   const user = useSelector(selectUser);
@@ -34,7 +59,7 @@ const ProductScreen = ({route, navigation}) => {
   const [product, setProduct] = useState(null);
   const [records, setRecords] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
-  const [price, setPrice] = useState('0');
+  const [price, setPrice] = useState(0);
 
   const fetchProductById = async () => {
     try {
@@ -155,11 +180,6 @@ const ProductScreen = ({route, navigation}) => {
       ) : (
         <>
           <Body>
-            <ProductImage source={{uri: product?.image}} resizeMode="cover" />
-            <Info>
-              <Title>{product?.title}</Title>
-              <Price>{product?.barcod}</Price>
-            </Info>
             {loading ? (
               <View
                 style={{
@@ -172,39 +192,33 @@ const ProductScreen = ({route, navigation}) => {
             ) : (
               <View style={{flex: 1}}>
                 {records.length > 0 ? (
-                  <>
-                    <RecordHeader>
-                      <Icon
-                        name={
-                          sort === 'increase'
-                            ? 'sort-numeric-asc'
-                            : 'sort-numeric-desc'
-                        }
-                        size={22}
-                        style={{color: '#30336b', marginLeft: 'auto'}}
-                        onPress={handleChangeSort}
-                      />
-                    </RecordHeader>
-                    <FlatList
-                      data={filteredRecord}
-                      renderItem={renderRecord}
-                      keyExtractor={renderRecordKey}
-                      showsVerticalScrollIndicator={false}
-                    />
-                  </>
+                  <FlatList
+                    data={filteredRecord}
+                    renderItem={renderRecord}
+                    keyExtractor={renderRecordKey}
+                    showsVerticalScrollIndicator={false}
+                    ListHeaderComponent={headerComponent(
+                      product,
+                      sort,
+                      handleChangeSort,
+                    )}
+                  />
                 ) : (
-                  <View style={{alignItems: 'center'}}>
-                    <Image
-                      source={images.empty}
-                      style={{width: SIZES.width * 0.8, height: 320}}
-                      resizeMode="cover"
-                    />
-                  </View>
+                  <>
+                    {headerComponent(product, sort, handleChangeSort)}
+                    <View style={{alignItems: 'center'}}>
+                      <Image
+                        source={images.empty}
+                        style={{width: SIZES.width * 0.8, height: 320}}
+                        resizeMode="cover"
+                      />
+                    </View>
+                  </>
                 )}
               </View>
             )}
           </Body>
-          {user && (
+          {/* {user && (
             <>
               <CustomModal
                 modalVisible={modalVisible}
@@ -215,22 +229,22 @@ const ProductScreen = ({route, navigation}) => {
                     Cancel
                   </ModalCancel>
                 </ModalHeader>
+                <Text style={{marginVertical: 10}}>Price</Text>
                 <View
                   style={{
-                    marginTop: 10,
                     borderRadius: 10,
                     paddingHorizontal: 10,
                     paddingVertical: 5,
                     borderColor: COLORS.black,
                     borderWidth: 1,
                   }}>
-                  <TextInput
-                    style={{
-                      color: COLORS.black,
-                    }}
+                  <CurrencyInput
                     value={price}
-                    keyboardType="number-pad"
-                    onChangeText={value => setPrice(value)}
+                    onChangeValue={setPrice}
+                    prefix="$ "
+                    delimiter=","
+                    separator="."
+                    precision={2}
                   />
                 </View>
                 <Button
@@ -241,7 +255,7 @@ const ProductScreen = ({route, navigation}) => {
               </CustomModal>
               <FloatingButton onPress={() => setModalVisible(true)} />
             </>
-          )}
+          )} */}
         </>
       )}
     </Container>

@@ -2,7 +2,11 @@ import React, {useEffect} from 'react';
 import {FlatList, View} from 'react-native';
 import {useSelector} from 'react-redux';
 import {useDispatch} from 'react-redux';
-import {fetchAllProduct, fetchAllUserProducts} from '../store/productSlice';
+import {
+  fetchAllProduct,
+  fetchAllUserProducts,
+  selectFilteredProducts,
+} from '../store/productSlice';
 import {selectUser} from '../store/userSlice';
 import Header from '../components/Header';
 import Product from '../components/Product';
@@ -12,9 +16,10 @@ import {
   fetchAllFavorites,
   selectFavorites,
 } from '../store/favoriteSlice';
+import CategoryList from '../components/Category/CategoryList';
 
 const Home = ({navigation}) => {
-  const products = useSelector(state => state.products.data);
+  const filteredProducts = useSelector(selectFilteredProducts);
   const favorites = useSelector(selectFavorites);
 
   const user = useSelector(selectUser);
@@ -49,10 +54,11 @@ const Home = ({navigation}) => {
     <View style={{flex: 1}}>
       <Header navigation={navigation} />
       <FlatList
-        data={products}
+        data={filteredProducts}
         numColumns={2}
         renderItem={renderProduct}
         keyExtractor={renderProductKey}
+        ListHeaderComponent={CategoryList}
       />
       {user && (
         <FloatingButton

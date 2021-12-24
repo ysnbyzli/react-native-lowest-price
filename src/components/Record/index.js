@@ -1,4 +1,5 @@
 import React from 'react';
+import {formatNumber} from 'react-native-currency-input';
 
 import styled from 'styled-components/native';
 import {COLORS, FONTS} from '../../constants';
@@ -13,7 +14,15 @@ const Record = ({record}) => {
         />
         <Name>{record.user.username}</Name>
       </Content>
-      <Price>{record.price}</Price>
+      <Price>
+        {formatNumber(record.price, {
+          separator: ',',
+          prefix: '$ ',
+          precision: 2,
+          delimiter: '.',
+          signPosition: 'beforePrefix',
+        })}
+      </Price>
       <Time>{getRelativeTime(record.createdAt)}</Time>
     </Container>
   );

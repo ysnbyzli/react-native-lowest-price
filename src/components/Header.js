@@ -197,6 +197,7 @@ const Header = ({navigation}) => {
 const styles = StyleSheet.create({
   container: {
     zIndex: 1000,
+    paddingVertical: 10,
   },
   header: {
     height: 50,
@@ -213,7 +214,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 40,
-    backgroundColor: '#e4e6eb',
+    backgroundColor: 'white',
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
