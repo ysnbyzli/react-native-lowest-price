@@ -46,7 +46,7 @@ export const addProduct = createAsyncThunk(
       });
       return response.data;
     } catch (error) {
-      console.log('redux ::> ', error);
+      console.log('redux ::> ', error.response);
       return rejectWithValue(error.response.data);
     }
   },
@@ -109,7 +109,14 @@ export const productSlice = createSlice({
       state.error = null;
     });
     builder.addCase(addProduct.fulfilled, (state, action) => {
-      state.data.unshift(action.payload);
+      const isExists = state.data.find(item => item._id === action.payload._id);
+      if (isExists) {
+        state.data = state.data.map(item =>
+          item.id === action.payload._id ? action.payload : item,
+        );
+      } else {
+        state.data.unshift(action.payload);
+      }
       state.userProducts.unshift(action.payload);
       state.loading = false;
       state.isAddSuccess = true;

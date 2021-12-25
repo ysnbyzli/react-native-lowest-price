@@ -1,30 +1,41 @@
 import React from 'react';
+import {TouchableOpacity, View} from 'react-native';
 import {formatNumber} from 'react-native-currency-input';
 
 import styled from 'styled-components/native';
 import {COLORS, FONTS} from '../../constants';
 import {getRelativeTime} from '../../utils/helper';
-const Record = ({record}) => {
+
+// navigation.navigate('ProductScreen', {product_id: record.product._id})
+const Record = ({record, navigation}) => {
   return (
-    <Container>
-      <Content>
-        <Avatar
-          source={{uri: record.user.profile_image}}
-          resizeMode="contain"
-        />
-        <Name>{record.user.username}</Name>
-      </Content>
-      <Price>
-        {formatNumber(record.price, {
-          separator: ',',
-          prefix: '$ ',
-          precision: 2,
-          delimiter: '.',
-          signPosition: 'beforePrefix',
-        })}
-      </Price>
-      <Time>{getRelativeTime(record.createdAt)}</Time>
-    </Container>
+    <TouchableOpacity
+      onPress={() =>
+        navigation.navigate('ProductScreen', {product_id: record.product._id})
+      }>
+      <Container>
+        <Content>
+          <Avatar
+            source={{uri: record?.user.profile_image}}
+            resizeMode="contain"
+          />
+          <View style={{marginLeft: 8}}>
+            <Market>{record?.market}</Market>
+            <Name>@{record?.user.username}</Name>
+          </View>
+        </Content>
+        <Price>
+          {formatNumber(record?.price, {
+            separator: ',',
+            prefix: '$ ',
+            precision: 2,
+            delimiter: '.',
+            signPosition: 'beforePrefix',
+          })}
+        </Price>
+        <Time>{getRelativeTime(record?.createdAt)}</Time>
+      </Container>
+    </TouchableOpacity>
   );
 };
 
@@ -40,6 +51,7 @@ const Container = styled.View`
 `;
 
 const Content = styled.View`
+  flex-direction: row;
   align-items: center;
 `;
 
@@ -49,14 +61,19 @@ const Price = styled.Text`
 `;
 
 const Avatar = styled.Image`
-  height: 40px;
+  height: 45px;
   width: 45px;
   border-radius: 20px;
 `;
 
-const Name = styled.Text`
-  margin-top: 5px;
+const Market = styled.Text`
+font-family: ${FONTS.regular}
   color: ${COLORS.black};
+`;
+
+const Name = styled.Text`
+  color: ${COLORS.gray};
+  font-size: 12px;
 `;
 
 const Time = styled.Text`

@@ -2,43 +2,45 @@ import React, {useEffect, useState} from 'react';
 import styled from 'styled-components/native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {useSelector} from 'react-redux';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import {showMessage} from 'react-native-flash-message';
-import CurrencyInput from 'react-native-currency-input';
 
 import {COLORS, FONTS, images, SIZES} from '../constants';
 import api from '../utils/api';
-import {
-  ActivityIndicator,
-  FlatList,
-  Image,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
-
+import {ActivityIndicator, FlatList, Image, Text, View} from 'react-native';
 import Record from '../components/Record';
-import CustomModal from '../components/Modal/CustomModal';
 import {selectUser} from '../store/userSlice';
-import FloatingButton from '../components/FloatingButton';
-import Button from '../components/Form/Button';
 import Favorite from '../components/Favorite';
 import RandomProduct from '../components/RandomProduct';
-
+import {getCalendar} from '../utils/helper';
 const headerComponent = (product, sort, handleChangeSort) => {
   return (
     <View>
       <ProductImage source={{uri: product?.image}} resizeMode="cover" />
       <Info>
         <View>
+          <Market>{product?.market}</Market>
           <Title>{product?.title}</Title>
         </View>
-        <Price>{product?.barcod}</Price>
+        <View>
+          <Price>
+            <Text style={{color: COLORS.black, fontFamily: FONTS.semiBold}}>
+              Barcod:
+            </Text>{' '}
+            {product?.barcod}
+          </Price>
+          <Text
+            style={{
+              fontFamily: FONTS.regular,
+              color: COLORS.gray,
+              fontSize: 10,
+            }}>
+            {getCalendar(product?.createdAt)}
+          </Text>
+        </View>
       </Info>
+      <Desc>{product?.description}</Desc>
       <RecordHeader>
-        <Icon
-          name={sort === 'increase' ? 'sort-numeric-asc' : 'sort-numeric-desc'}
+        <AntDesign
+          name={'filter'}
           size={22}
           style={{color: '#30336b', marginLeft: 'auto'}}
           onPress={handleChangeSort}
@@ -58,8 +60,6 @@ const ProductScreen = ({route, navigation}) => {
   const [error, setError] = useState(null);
   const [product, setProduct] = useState(null);
   const [records, setRecords] = useState([]);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [price, setPrice] = useState(0);
 
   const fetchProductById = async () => {
     try {
@@ -91,41 +91,6 @@ const ProductScreen = ({route, navigation}) => {
     }
   };
 
-  const addProductRecordPrice = async (id, price) => {
-    const token = await AsyncStorage.getItem('token');
-    try {
-      setLoading(true);
-      const body = {
-        price: Number(price),
-        product: id,
-      };
-      const response = await api().post('/records', body, {
-        headers: {
-          Accept: 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const newRecord = {
-        ...response.data,
-        user: {
-          profile_image: user.profile_image,
-          username: user.username,
-        },
-      };
-      setRecords([newRecord, ...records]);
-      setLoading(false);
-      showMessage({
-        type: 'success',
-        icon: 'success',
-        message: 'Price successfully added',
-      });
-      setModalVisible(false);
-    } catch (error) {
-      setError(error.response.data);
-      setLoading(false);
-    }
-  };
-
   const handleChangeSort = () => {
     if (sort === '' || sort === 'decrease') {
       setSort('increase');
@@ -143,13 +108,19 @@ const ProductScreen = ({route, navigation}) => {
   }, []);
 
   useEffect(() => {
+    if (product_id) {
+      fetchProductById();
+    }
+  }, [product_id]);
+
+  useEffect(() => {
     if (product) {
       fetchProductRecords();
     }
   }, [product]);
 
   const renderRecord = ({item}) => {
-    return <Record record={item} />;
+    return <Record record={item} navigation={navigation} />;
   };
 
   const renderRecordKey = item => item._id.toString();
@@ -218,44 +189,6 @@ const ProductScreen = ({route, navigation}) => {
               </View>
             )}
           </Body>
-          {/* {user && (
-            <>
-              <CustomModal
-                modalVisible={modalVisible}
-                setModalVisible={setModalVisible}>
-                <ModalHeader>
-                  <ModalTitle>{product?.title.toUpperCase()}</ModalTitle>
-                  <ModalCancel onPress={() => setModalVisible(false)}>
-                    Cancel
-                  </ModalCancel>
-                </ModalHeader>
-                <Text style={{marginVertical: 10}}>Price</Text>
-                <View
-                  style={{
-                    borderRadius: 10,
-                    paddingHorizontal: 10,
-                    paddingVertical: 5,
-                    borderColor: COLORS.black,
-                    borderWidth: 1,
-                  }}>
-                  <CurrencyInput
-                    value={price}
-                    onChangeValue={setPrice}
-                    prefix="$ "
-                    delimiter=","
-                    separator="."
-                    precision={2}
-                  />
-                </View>
-                <Button
-                  text="Add Price"
-                  onPress={() => addProductRecordPrice(product_id, price)}
-                  loading={loading}
-                />
-              </CustomModal>
-              <FloatingButton onPress={() => setModalVisible(true)} />
-            </>
-          )} */}
         </>
       )}
     </Container>
@@ -287,40 +220,39 @@ const ProductImage = styled.Image`
 const Info = styled.View`
   flex-direction: row;
   justify-content: space-between;
+  align-items: center;
   margin-top: 10px;
 `;
 
-const Title = styled.Text`
-  font-family: ${FONTS.semiBold};
+const Desc = styled.Text`
+  margin-top: 10px;
+  text-align: justify;
+  font-family: ${FONTS.regular};
   color: ${COLORS.black};
-  font-size: 15px;
+`;
+
+const Market = styled.Text`
+  font-family: ${FONTS.bold};
+  color: ${COLORS.black};
+  font-size: 14px;
+`;
+
+const Title = styled.Text`
+  font-family: ${FONTS.regular};
+  color: ${COLORS.gray};
+  font-size: 10px;
 `;
 
 const Price = styled.Text`
   font-family: ${FONTS.regular};
   color: ${COLORS.black};
+  font-size: 10px;
 `;
 
 const RecordHeader = styled.View`
-  margin-top: 15px;
   margin-bottom: 15px;
   flex-direction: row;
   justify-content: space-between;
-`;
-
-const ModalHeader = styled.View`
-  flex-direction: row;
-  justify-content: space-between;
-`;
-
-const ModalTitle = styled.Text`
-  font-family: ${FONTS.semiBold};
-  color: ${COLORS.primary};
-`;
-
-const ModalCancel = styled.Text`
-  color: ${COLORS.danger};
-  font-family: ${FONTS.regular};
 `;
 
 const NotFound = styled.View`

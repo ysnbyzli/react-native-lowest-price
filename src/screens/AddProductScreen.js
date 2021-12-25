@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Image, ScrollView, Text, View} from 'react-native';
+import {Image, ScrollView, Text, TextInput, View} from 'react-native';
 import styled from 'styled-components';
 import {useFormik} from 'formik';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
@@ -14,7 +14,7 @@ import Button from '../components/Form/Button';
 import BottomModal from '../components/Modal/BottomModal';
 import Item from '../components/Profile/Item';
 import CustomButton from '../components/CustomButton';
-import {COLORS, images, SIZES} from '../constants';
+import {COLORS, FONTS, images, SIZES} from '../constants';
 import {showMessage} from 'react-native-flash-message';
 import {selectCategories} from '../store/categorySlice';
 import addProductSchema from '../validations/addProductSchema';
@@ -52,7 +52,7 @@ const AddProductScreen = ({navigation}) => {
       showMessage({
         type: 'danger',
         icon: 'danger',
-        message: error.message,
+        message: error,
       });
     }
     dispatch(changeError(null));
@@ -101,8 +101,11 @@ const AddProductScreen = ({navigation}) => {
       type: image.type,
     });
     formData.append('title', values.title.toString());
-    formData.append('price', values.price.toString());
+    formData.append('price', price);
     formData.append('barcod', values.barcod.toString());
+    formData.append('market', values.market.toString());
+    formData.append('description', values.description.toString());
+    formData.append('category', selectedCategory);
     dispatch(addProduct(formData));
   };
 
@@ -113,6 +116,7 @@ const AddProductScreen = ({navigation}) => {
         price: '',
         barcod: '',
         market: '',
+        description: '',
       },
       validationSchema: addProductSchema,
       onSubmit: values => {
@@ -160,6 +164,24 @@ const AddProductScreen = ({navigation}) => {
           touched={touched.market}
           onBlur={handleBlur('market')}
         />
+        <View>
+          <Text style={{paddingLeft: 8, marginTop: 8}}>Description</Text>
+          <InputWrapper
+            error={errors.description}
+            touched={touched.description}>
+            <TextInput
+              value={values.description}
+              onChangeText={handleChange('description')}
+              onBlur={handleBlur('description')}
+              multiline={true}
+              style={{textAlignVertical: 'top', height: 150}}
+              maxLength={299}
+            />
+          </InputWrapper>
+          {errors.description && touched.description && (
+            <ErrorText>{errors.description}</ErrorText>
+          )}
+        </View>
         <View>
           <Text style={{paddingLeft: 8, marginTop: 8}}>Price</Text>
           <View
@@ -259,6 +281,23 @@ const ProductImage = styled.Image`
   width: ${SIZES.width * 0.9}px;
   height: 220px;
   border-radius: 20px;
+`;
+
+const InputWrapper = styled.View`
+  background-color: #f1eded;
+  width: 100%;
+  border-radius: 10px;
+  padding-left: 12px;
+  margin-top: 18px;
+  border: ${props => (props.error && props.touched ? '#ff4f4f' : '#f1eded')};
+`;
+
+const ErrorText = styled.Text`
+  font-family: ${FONTS.regular};
+  color: #ff4f4f;
+  font-size: 13px;
+  margin-left: 5px;
+  font-style: italic;
 `;
 
 export default AddProductScreen;
