@@ -7,12 +7,13 @@ import {COLORS, FONTS} from '../../constants';
 import {getRelativeTime} from '../../utils/helper';
 
 // navigation.navigate('ProductScreen', {product_id: record.product._id})
-const Record = ({record, navigation}) => {
+const Record = ({record, navigation, setSearch}) => {
   return (
     <TouchableOpacity
-      onPress={() =>
-        navigation.navigate('ProductScreen', {product_id: record.product._id})
-      }>
+      onPress={() => {
+        navigation.navigate('ProductScreen', {product_id: record.product._id});
+        setSearch('');
+      }}>
       <Container>
         <Content>
           <Avatar

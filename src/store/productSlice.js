@@ -167,6 +167,8 @@ export const selectFilteredProducts = state => {
       ? item.category.title === 'Clothes'
       : state.products.activeCategory === 'Technology'
       ? item.category.title === 'Technology'
+      : state.products.activeCategory === 'Book'
+      ? item.category.title === 'Book'
       : item.category.title === 'Accessory',
   );
 };

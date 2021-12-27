@@ -107,9 +107,8 @@ const RegisterScreen = ({navigation}) => {
   );
 };
 
-const Container = styled.View`
+const Container = styled.KeyboardAvoidingView`
   flex: 1;
-  justify-content: center;
 `;
 const Background = styled.ImageBackground`
   flex: 1;

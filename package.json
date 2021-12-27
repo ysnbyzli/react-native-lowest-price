@@ -32,6 +32,7 @@
     "react-native-safe-area-context": "^3.3.2",
     "react-native-scan-barcode": "^3.1.7",
     "react-native-screens": "^3.9.0",
+    "react-native-simple-radio-button": "^2.7.4",
     "react-native-svg": "^12.1.1",
     "react-native-vector-icons": "^9.0.0",
     "react-redux": "^7.2.6",

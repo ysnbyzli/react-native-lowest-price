@@ -3,13 +3,17 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import styled from 'styled-components';
 import {COLORS, FONTS} from '../../constants';
 
-const Item = ({title, icon, onPress}) => {
+const Item = ({title, icon, onPress, textStyle}) => {
   return (
     <Button onPress={onPress}>
       <Container>
         <Left>
-          <Icon name={icon} size={22} color={COLORS.black} />
-          <Text>{title}</Text>
+          <Icon
+            name={icon}
+            size={textStyle ? 20 : 22}
+            color={textStyle ? COLORS.danger : COLORS.black}
+          />
+          <Text style={textStyle}>{title}</Text>
         </Left>
         <Icon name="chevron-forward-outline" size={22} color={COLORS.black} />
       </Container>

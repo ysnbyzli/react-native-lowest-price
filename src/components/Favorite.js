@@ -6,7 +6,7 @@ import {
   addProductToFavorites,
   changeFavoriteError,
   changeFavoriteSuccess,
-  deleteProductToFavorites,
+  deleteProductScreenToFavorites,
 } from '../store/favoriteSlice';
 import {showMessage} from 'react-native-flash-message';
 
@@ -41,7 +41,7 @@ const Favorite = ({product}) => {
 
   const handleAddToFavorite = () => {
     if (isFavorite) {
-      dispatch(deleteProductToFavorites(product));
+      dispatch(deleteProductScreenToFavorites(product));
     } else {
       dispatch(addProductToFavorites(product));
     }

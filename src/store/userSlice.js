@@ -45,6 +45,9 @@ export const userSlice = createSlice({
     addImage: (state, action) => {
       state.data = {...state.data, profile_image: action.payload};
     },
+    logout: state => {
+      state.data = null;
+    },
   },
   extraReducers: builder => {
     // Login
@@ -78,6 +81,6 @@ export const userSlice = createSlice({
 
 export const selectUser = state => state.user.data;
 
-export const {addImage} = userSlice.actions;
+export const {addImage, logout} = userSlice.actions;
 
 export default userSlice.reducer;

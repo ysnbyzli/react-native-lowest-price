@@ -1,24 +1,38 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import styled from 'styled-components/native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {useSelector} from 'react-redux';
 
 import {COLORS, FONTS, images, SIZES} from '../constants';
 import api from '../utils/api';
-import {ActivityIndicator, FlatList, Image, Text, View} from 'react-native';
+import {
+  ActivityIndicator,
+  FlatList,
+  Image,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import Record from '../components/Record';
 import {selectUser} from '../store/userSlice';
 import Favorite from '../components/Favorite';
 import RandomProduct from '../components/RandomProduct';
 import {getCalendar} from '../utils/helper';
-const headerComponent = (product, sort, handleChangeSort) => {
+import RadioForm, {
+  RadioButton,
+  RadioButtonInput,
+  RadioButtonLabel,
+} from 'react-native-simple-radio-button';
+
+const headerComponent = (product, drawer) => {
   return (
     <View>
       <ProductImage source={{uri: product?.image}} resizeMode="cover" />
       <Info>
         <View>
-          <Market>{product?.market}</Market>
           <Title>{product?.title}</Title>
+          <Market>{product?.market}</Market>
         </View>
         <View>
           <Price>
@@ -42,17 +56,25 @@ const headerComponent = (product, sort, handleChangeSort) => {
         <AntDesign
           name={'filter'}
           size={22}
-          style={{color: '#30336b', marginLeft: 'auto'}}
-          onPress={handleChangeSort}
+          style={{color: '#30336b', marginLeft: 'auto', padding: 10}}
+          onPress={() => drawer.current.openDrawer()}
         />
       </RecordHeader>
     </View>
   );
 };
 
+const radioProps = [
+  {label: 'Price', value: 1},
+  {label: 'Market', value: 2},
+  {label: 'Date', value: 3},
+];
+
 const ProductScreen = ({route, navigation}) => {
+  // * drawer
+  const drawer = useRef(null);
+
   const user = useSelector(selectUser);
-  const [sort, setSort] = useState('');
 
   const {product_id, isBarcod, barcod} = route.params;
 
@@ -60,6 +82,10 @@ const ProductScreen = ({route, navigation}) => {
   const [error, setError] = useState(null);
   const [product, setProduct] = useState(null);
   const [records, setRecords] = useState([]);
+  // * Filter
+  const [search, setSearch] = useState('');
+  const [sort, setSort] = useState(false);
+  const [selectedFilterIndex, setSelectedFilterIndex] = useState(null);
 
   const fetchProductById = async () => {
     try {
@@ -91,14 +117,6 @@ const ProductScreen = ({route, navigation}) => {
     }
   };
 
-  const handleChangeSort = () => {
-    if (sort === '' || sort === 'decrease') {
-      setSort('increase');
-    } else {
-      setSort('decrease');
-    }
-  };
-
   useEffect(() => {
     if (isBarcod) {
       fetchProductByBarcod();
@@ -120,20 +138,123 @@ const ProductScreen = ({route, navigation}) => {
   }, [product]);
 
   const renderRecord = ({item}) => {
-    return <Record record={item} navigation={navigation} />;
+    return (
+      <Record record={item} navigation={navigation} setSearch={setSearch} />
+    );
   };
 
   const renderRecordKey = item => item._id.toString();
 
-  const filteredRecord =
-    sort == ''
+  const searchRecord = records.filter(record =>
+    record.market.toLowerCase().includes(search.toLowerCase()),
+  );
+
+  const handleFilter = (index, sort) => {
+    const number = index - 1;
+    const type = radioProps[number].label.toLowerCase();
+    if (number === 0) {
+      if (sort) return records.sort((a, b) => a.price - b.price);
+      return records.sort((a, b) => b.price - a.price);
+    }
+    if (number === 2) {
+      if (sort)
+        return records.sort(
+          (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
+        );
+      return records.sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
+      );
+    }
+    if (sort) return records.sort((a, b) => a[type].localeCompare(b[type]));
+    return records.sort((a, b) => b[type].localeCompare(a[type]));
+  };
+
+  let filteredRecord =
+    !selectedFilterIndex && !sort
       ? records
-      : sort == 'increase'
-      ? records.sort((a, b) => a.price - b.price)
-      : records.sort((a, b) => b.price - a.price);
+      : handleFilter(selectedFilterIndex, sort);
+
+  const navigationView = () => {
+    return (
+      <View style={{padding: 10}}>
+        <View
+          style={{
+            flexDirection: 'row',
+            width: '90%',
+            backgroundColor: '#ecf0f1',
+            borderRadius: 10,
+            alignItems: 'center',
+          }}>
+          <TextInput
+            style={{width: '85%', paddingLeft: 15}}
+            value={search}
+            onChangeText={setSearch}
+            placeholder={'Market Search'}
+          />
+          <AntDesign
+            name="search1"
+            size={22}
+            style={{color: '#30336b', marginLeft: 'auto', padding: 10}}
+            onPress={() => drawer.current.openDrawer()}
+          />
+        </View>
+        <FontAwesome
+          name={sort ? 'sort-alpha-desc' : 'sort-alpha-asc'}
+          size={22}
+          style={{marginLeft: 'auto', marginRight: 30, marginVertical: 20}}
+          onPress={() => setSort(!sort)}
+        />
+        <View>
+          <RadioForm animation={true}>
+            {radioProps.map((obj, i) => (
+              <RadioButton
+                labelHorizontal={true}
+                key={i + 1}
+                style={{marginTop: 15}}>
+                <RadioButtonLabel
+                  obj={obj}
+                  index={i + 1}
+                  labelHorizontal={true}
+                  onPress={() => {
+                    setSelectedFilterIndex(i + 1);
+                  }}
+                  labelStyle={{
+                    fontFamily: FONTS.regular,
+                    fontSize: 18,
+                    color: COLORS.black,
+                  }}
+                  labelWrapStyle={{minWidth: '80%'}}
+                />
+                <RadioButtonInput
+                  obj={obj}
+                  index={i + 1}
+                  isSelected={selectedFilterIndex === i + 1}
+                  onPress={() => {
+                    setSelectedFilterIndex(i + 1);
+                  }}
+                  borderWidth={1}
+                  buttonInnerColor={COLORS.primary}
+                  buttonOuterColor={
+                    selectedFilterIndex === i + 1 ? COLORS.black : COLORS.gray
+                  }
+                  buttonSize={10}
+                  buttonOuterSize={25}
+                  buttonStyle={{}}
+                  buttonWrapStyle={{marginLeft: 10}}
+                />
+              </RadioButton>
+            ))}
+          </RadioForm>
+        </View>
+      </View>
+    );
+  };
 
   return (
-    <Container>
+    <Container
+      ref={drawer}
+      renderNavigationView={() => navigationView(product)}
+      drawerPosition="right">
       <Header>
         <AntDesign
           name="arrowleft"
@@ -164,19 +285,15 @@ const ProductScreen = ({route, navigation}) => {
               <View style={{flex: 1}}>
                 {records.length > 0 ? (
                   <FlatList
-                    data={filteredRecord}
+                    data={search ? searchRecord : filteredRecord}
                     renderItem={renderRecord}
                     keyExtractor={renderRecordKey}
                     showsVerticalScrollIndicator={false}
-                    ListHeaderComponent={headerComponent(
-                      product,
-                      sort,
-                      handleChangeSort,
-                    )}
+                    ListHeaderComponent={headerComponent(product, drawer)}
                   />
                 ) : (
                   <>
-                    {headerComponent(product, sort, handleChangeSort)}
+                    {headerComponent(product)}
                     <View style={{alignItems: 'center'}}>
                       <Image
                         source={images.empty}
@@ -195,7 +312,7 @@ const ProductScreen = ({route, navigation}) => {
   );
 };
 
-const Container = styled.View`
+const Container = styled.DrawerLayoutAndroid`
   flex: 1;
 `;
 
@@ -232,15 +349,15 @@ const Desc = styled.Text`
 `;
 
 const Market = styled.Text`
-  font-family: ${FONTS.bold};
-  color: ${COLORS.black};
-  font-size: 14px;
-`;
-
-const Title = styled.Text`
   font-family: ${FONTS.regular};
   color: ${COLORS.gray};
   font-size: 10px;
+`;
+
+const Title = styled.Text`
+  font-family: ${FONTS.bold};
+  color: ${COLORS.black};
+  font-size: 14px;
 `;
 
 const Price = styled.Text`
@@ -250,9 +367,8 @@ const Price = styled.Text`
 `;
 
 const RecordHeader = styled.View`
-  margin-bottom: 15px;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: flex-end;
 `;
 
 const NotFound = styled.View`

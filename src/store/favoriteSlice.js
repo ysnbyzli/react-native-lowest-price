@@ -66,6 +66,24 @@ export const deleteProductToFavorites = createAsyncThunk(
   },
 );
 
+export const deleteProductScreenToFavorites = createAsyncThunk(
+  'favorites/deleteScreen',
+  async item => {
+    const token = await AsyncStorage.getItem('token');
+    try {
+      const response = await api().delete(`/favorites/${item._id}`, {
+        headers: {
+          Accept: 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.log(error.response.data.message);
+    }
+  },
+);
+
 export const favoriteSlice = createSlice({
   name: 'favorites',
   initialState: {
@@ -121,6 +139,24 @@ export const favoriteSlice = createSlice({
       state.error = action.payload;
       state.loading = false;
     });
+    builder.addCase(deleteProductScreenToFavorites.pending, state => {
+      state.loading = false;
+      state.error = null;
+    });
+    builder.addCase(
+      deleteProductScreenToFavorites.fulfilled,
+      (state, action) => {
+        state.data = state.data.filter(item => item._id != action.payload._id);
+        state.loading = false;
+      },
+    );
+    builder.addCase(
+      deleteProductScreenToFavorites.rejected,
+      (state, action) => {
+        state.error = action.payload;
+        state.loading = false;
+      },
+    );
   },
 });
 

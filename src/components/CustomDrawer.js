@@ -7,11 +7,17 @@ import styled from 'styled-components/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {COLORS, FONTS, images} from '../constants';
 import Avatar from './Avatar';
-import {useSelector} from 'react-redux';
-import {selectUser} from '../store/userSlice';
+import {useSelector, useDispatch} from 'react-redux';
+import {selectUser, logout} from '../store/userSlice';
 
 const CustomDrawer = props => {
   const user = useSelector(selectUser);
+  const dispatch = useDispatch();
+
+  const handleLogout = () => {
+    dispatch(logout());
+    setTimeout(() => props.navigation.navigate('LoginScreen'));
+  };
 
   return (
     <StyledContainer>
@@ -39,8 +45,7 @@ const CustomDrawer = props => {
           <BottomText>Settings</BottomText>
         </BottomItem>
         {user ? (
-          <StyledTouchable
-            onPress={() => props.navigation.navigate('LoginScreen')}>
+          <StyledTouchable onPress={() => handleLogout()}>
             <BottomItem>
               <Ionicons name="exit-outline" size={22} color={'#000'} />
               <BottomText>Logout</BottomText>
