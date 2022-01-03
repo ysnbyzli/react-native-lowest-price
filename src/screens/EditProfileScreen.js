@@ -4,9 +4,15 @@ import styled from 'styled-components';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {useFormik} from 'formik';
 import {showMessage} from 'react-native-flash-message';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 
 import {COLORS, FONTS} from '../constants';
-import {addImage, updateUserRequest} from '../store/userSlice';
+import {
+  addImage,
+  setError,
+  setIsSuccess,
+  updateUserRequest,
+} from '../store/userSlice';
 import Input from '../components/Form/Input';
 import BottomModal from '../components/Modal/BottomModal';
 import CustomButton from '../components/CustomButton';
@@ -15,11 +21,11 @@ import Button from '../components/Form/Button';
 import Avatar from '../components/Avatar';
 import {PermissionsAndroid} from 'react-native';
 
-const EditProfileScreen = () => {
+const EditProfileScreen = ({navigation}) => {
   const [show, setShow] = useState(false);
   const [image, setImage] = useState(null);
 
-  const {loading, data} = useSelector(state => state.user);
+  const {loading, data, error, isSuccess} = useSelector(state => state.user);
   const dispatch = useDispatch();
 
   const requestCameraPermission = async () => {
@@ -86,13 +92,30 @@ const EditProfileScreen = () => {
     formData.append('firstName', values.firstName.toString());
     formData.append('lastName', values.lastName.toString());
     formData.append('username', values.username.toString());
-    dispatch(updateUserRequest(formData, 'deneme'));
-    showMessage({
-      message: 'Profile updated successfully',
-      type: 'success',
-      icon: 'success',
-    });
+    dispatch(updateUserRequest(formData));
   };
+
+  useEffect(() => {
+    if (error) {
+      showMessage({
+        type: 'danger',
+        icon: 'danger',
+        message: error.message,
+      });
+      dispatch(setError(null));
+    }
+  }, [error]);
+
+  useEffect(() => {
+    if (isSuccess) {
+      showMessage({
+        type: 'success',
+        icon: 'success',
+        message: 'Your profile has been successfully updated',
+      });
+      dispatch(setIsSuccess(false));
+    }
+  }, [isSuccess]);
 
   const {handleSubmit, handleChange, values} = useFormik({
     initialValues: {
@@ -107,59 +130,74 @@ const EditProfileScreen = () => {
 
   return (
     <Container>
-      <HandleAvatar onPress={requestCameraPermission}>
-        <Content>
-          <Avatar width={90} height={90} />
-          <Text>Change Profile Image</Text>
-        </Content>
-      </HandleAvatar>
-      <Input
-        value={values.firstName}
-        onChangeText={handleChange('firstName')}
-        label="First Name"
-      />
-      <Input
-        value={values.lastName}
-        label="Last Name"
-        onChangeText={handleChange('lastName')}
-      />
-      <Input
-        value={values.username}
-        label="Username"
-        onChangeText={handleChange('username')}
-      />
-      <Button text="Güncelle" onPress={handleSubmit} loading={loading} />
-      <BottomModal
-        onTouchOutSide={onHandleModalClose}
-        title="Change Photo"
-        isShow={show}
-        onHandleModalClose={onHandleModalClose}>
-        <Item
-          icon="camera-outline"
-          title="Take a photo from the camera"
-          onPress={handleChangeImageFromCamera}
+      <Header>
+        <AntDesign
+          name="arrowleft"
+          size={22}
+          onPress={() => navigation.goBack()}
         />
-        <Item
-          icon="images-outline"
-          title="Select photo from gallery"
-          onPress={handleChangeImageFromGallery}
+      </Header>
+      <Wrapper>
+        <HandleAvatar onPress={requestCameraPermission}>
+          <Content>
+            <Avatar width={90} height={90} />
+            <Text>Change Profile Image</Text>
+          </Content>
+        </HandleAvatar>
+        <Input
+          value={values.firstName}
+          onChangeText={handleChange('firstName')}
+          label="First Name"
         />
-        <CustomButton
-          text="CANCEL"
-          bg={COLORS.danger}
-          onPress={onHandleModalClose}
-          padding={10}
+        <Input
+          value={values.lastName}
+          label="Last Name"
+          onChangeText={handleChange('lastName')}
         />
-      </BottomModal>
+        <Input
+          value={values.username}
+          label="Username"
+          onChangeText={handleChange('username')}
+        />
+        <Button text="Güncelle" onPress={handleSubmit} loading={loading} />
+        <BottomModal
+          onTouchOutSide={onHandleModalClose}
+          isShow={show}
+          onHandleModalClose={onHandleModalClose}>
+          <Item
+            icon="camera-outline"
+            title="Take a photo from the camera"
+            onPress={handleChangeImageFromCamera}
+          />
+          <Item
+            icon="images-outline"
+            title="Select photo from gallery"
+            onPress={handleChangeImageFromGallery}
+          />
+          <CustomButton
+            text="CANCEL"
+            bg={COLORS.danger}
+            onPress={onHandleModalClose}
+            padding={10}
+          />
+        </BottomModal>
+      </Wrapper>
     </Container>
   );
 };
 
 const Container = styled.View`
   flex: 1;
-  align-items: center;
   justify-content: center;
   margin: 20px;
+`;
+
+const Header = styled.View`
+  height: 100px;
+`;
+
+const Wrapper = styled.View`
+  flex: 1;
 `;
 
 const HandleAvatar = styled.TouchableWithoutFeedback``;

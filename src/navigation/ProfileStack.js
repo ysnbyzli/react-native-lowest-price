@@ -13,14 +13,7 @@ const ProfileStack = () => {
         headerShown: false,
       }}>
       <Stack.Screen name="ProfileScreen" component={Profile} />
-      <Stack.Screen
-        name="EditProfileScreen"
-        component={EditProfileScreen}
-        options={{
-          headerShown: true,
-          headerTitle: 'Edit Profile',
-        }}
-      />
+      <Stack.Screen name="EditProfileScreen" component={EditProfileScreen} />
       <Stack.Screen name="FavoritesScreen" component={FavoritesScreen} />
     </Stack.Navigator>
   );

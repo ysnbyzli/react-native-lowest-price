@@ -1,14 +1,14 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useFormik} from 'formik';
 import styled from 'styled-components/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import {showMessage} from 'react-native-flash-message';
 
 import {COLORS, FONTS, images, SIZES} from '../constants';
 import {registerSchema} from '../validations';
 import Input from '../components/Form/Input';
 import Button from '../components/Form/Button';
 import api from '../utils/api';
-import Alert from '../components/Alert';
 
 const RegisterScreen = ({navigation}) => {
   const [loading, setLoading] = useState(false);
@@ -26,6 +26,17 @@ const RegisterScreen = ({navigation}) => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (error) {
+      showMessage({
+        type: 'danger',
+        icon: 'danger',
+        message: error.message,
+      });
+      setError(null);
+    }
+  }, [error]);
 
   const {handleSubmit, handleBlur, handleChange, values, errors, touched} =
     useFormik({
@@ -45,7 +56,6 @@ const RegisterScreen = ({navigation}) => {
     <Container>
       <Background source={images.bg} resizeMode="cover">
         <Content>
-          {error && <Alert type="danger" text={error?.message} />}
           <Input
             placeholder="First Name"
             value={values.firstName}

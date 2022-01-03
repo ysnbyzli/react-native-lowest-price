@@ -40,6 +40,7 @@ export const userSlice = createSlice({
     data: null,
     loading: false,
     error: null,
+    isSuccess: false,
   },
   reducers: {
     addImage: (state, action) => {
@@ -47,6 +48,12 @@ export const userSlice = createSlice({
     },
     logout: state => {
       state.data = null;
+    },
+    setError: (state, action) => {
+      state.error = action.payload;
+    },
+    setIsSuccess: (state, action) => {
+      state.isSuccess = action.payload;
     },
   },
   extraReducers: builder => {
@@ -67,13 +74,16 @@ export const userSlice = createSlice({
     builder.addCase(updateUserRequest.pending, state => {
       state.loading = true;
       state.error = null;
+      state.isSuccess = false;
     });
     builder.addCase(updateUserRequest.fulfilled, (state, action) => {
       state.data = action.payload;
+      state.isSuccess = true;
       state.loading = false;
     });
     builder.addCase(updateUserRequest.rejected, (state, action) => {
       state.error = action.payload;
+      state.isSuccess = false;
       state.loading = false;
     });
   },
@@ -81,6 +91,6 @@ export const userSlice = createSlice({
 
 export const selectUser = state => state.user.data;
 
-export const {addImage, logout} = userSlice.actions;
+export const {addImage, logout, setError, setIsSuccess} = userSlice.actions;
 
 export default userSlice.reducer;
