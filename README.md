@@ -31,11 +31,14 @@ Bu projeyi çalıştırmak için aşağıdaki ortam değişkenlerini .env dosyan
 
 ## Ekran Görüntüleri
 
-<img src="./boarding.gif" width="300">
-<img src="./login.gif" width="300">
-<img src="./search.gif" width="300">
-<img src="./add.gif" width="300">
-<img src="./barcod.gif" width="300">
+<div>
+  <img src="./boarding.gif" width="300">
+  <img src="./login.gif" width="300">
+  <img src="./search.gif" width="300">
+  <img src="./add.gif" width="300">
+  <img src="./barcod.gif" width="300">
+</div>
+
 
 ## Bilgisayarınızda Çalıştırın
 
