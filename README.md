@@ -1,3 +1,5 @@
+
+
 # Lowest Price - React Native
 
 Bu proje Yönetim Bilişim Sistemleri (MIS) 4. sınıf güz dönemi vize projesi kapsamında
@@ -60,10 +62,10 @@ Gerekli paketleri yükleyin
   npm install
 ```
 
-Sunucuyu çalıştırın
+Uygulamayı çalıştırın
 
 ```bash
-  npm run start
+  npm run android
 ```
 
 ## Lisans
